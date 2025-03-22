@@ -19,7 +19,7 @@ namespace DataFileFormatter.ProcessResults {
         /// <summary>
         /// messages
         /// </summary>
-        private List<string> messages;
+        internal string message { get; }
 
         /// <summary>
         /// result codes
@@ -55,7 +55,7 @@ namespace DataFileFormatter.ProcessResults {
         /// <param name="resultCode">result code</param>
         private ProcessResult(ResultCode resultCode) {
             this.resultCode = (int)resultCode;
-            this.messages = new List<string>();
+            this.message = string.Empty;
         }
 
         /// <summary>
@@ -65,8 +65,7 @@ namespace DataFileFormatter.ProcessResults {
         /// <param name="message">message</param>
         private ProcessResult(ResultCode resultCode, string message) {
             this.resultCode = (int)resultCode;
-            this.messages = new List<string>();
-            this.messages.Add(message);
+            this.message = message;
         }
 
         /// <summary>
@@ -74,7 +73,7 @@ namespace DataFileFormatter.ProcessResults {
         /// </summary>
         /// <returns></returns>
         internal bool canContinueProcess() {
-            return resultCode != (int)ResultCode.OK;
+            return resultCode == (int)ResultCode.OK;
         }
 
         /// <summary>
@@ -113,9 +112,10 @@ namespace DataFileFormatter.ProcessResults {
         /// <summary>
         /// create instance for input file not found
         /// </summary>
+        /// <param name="filepath">file path</param>
         /// <returns></returns>
-        internal static ProcessResult inputFileNotFound() {
-            return new ProcessResult(ResultCode.NG_FILE_NOT_FOUND, "input file not found");
+        internal static ProcessResult inputFileNotFound(string filepath) {
+            return new ProcessResult(ResultCode.NG_FILE_NOT_FOUND, $"input file not found:{filepath}");
         }
 
         /// <summary>

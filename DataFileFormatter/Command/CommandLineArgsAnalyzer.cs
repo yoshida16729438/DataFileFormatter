@@ -111,6 +111,7 @@ namespace DataFileFormatter.Command {
                         if (i < args.Length - 1) {
                             try {
                                 this.commandLineData.encoding = System.Text.Encoding.GetEncoding(args[i + 1]);
+                                i++;
                             } catch (ArgumentException ex) {
                                 return ProcessResult.notAvailableCharset();
                             }
@@ -120,7 +121,11 @@ namespace DataFileFormatter.Command {
                         break;
 
                     default:
-                        this.commandLineData.fileName = args[i];
+                        if (System.IO.File.Exists(args[i])) {
+                            this.commandLineData.fileName = args[i];
+                        } else {
+                            return ProcessResult.inputFileNotFound(args[i]);
+                        }
                         break;
                 }
             }
