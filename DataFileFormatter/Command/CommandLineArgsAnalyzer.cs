@@ -91,7 +91,7 @@ namespace DataFileFormatter.Command {
                         break;
 
                     case CommandLineOptions.PADDING_SPACES_COUNT:
-                        if (i < args.Length - 1 && int.TryParse(args[i + 1], out int count)) {
+                        if (i < args.Length - 1 && int.TryParse(args[i + 1], out int count) && count > 0) {
                             this.commandLineData.paddingSpacesCount = count;
                             i++;
                         } else {
