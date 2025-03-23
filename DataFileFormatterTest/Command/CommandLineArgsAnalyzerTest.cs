@@ -12,9 +12,9 @@ namespace DataFileFormatterTest.Command {
     public class CommandLineArgsAnalyzerTest {
 
         [TestMethod]
-        public void analyzeTest() {
+        public void AnalyzeTest() {
             var analyzer = new CommandLineArgsAnalyzer();
-            var res = analyzer.analyze(new string[] {
+            var res = analyzer.Analyze(new string[] {
                 "--xml",
                 "--unformat",
                 "--outfile",
@@ -24,23 +24,23 @@ namespace DataFileFormatterTest.Command {
                 "--charset",
                 "shift-jis"
             });
-            Assert.IsTrue(res.canContinueProcess());
+            Assert.IsTrue(res.CanContinueProcess());
             Assert.AreEqual(0, res.resultCode);
-            Assert.AreEqual(string.Empty, res.message);
+            Assert.AreEqual(string.Empty, res.Message);
 
-            Assert.AreEqual(string.Empty, analyzer.commandLineData.fileName);
-            Assert.AreEqual("outdir\\outfile.xml", analyzer.commandLineData.outputFileName);
-            Assert.AreEqual(CommandLineData.FileType.xml, analyzer.commandLineData.fileType);
-            Assert.AreEqual(CommandLineData.FormatStyle.unformat, analyzer.commandLineData.formatStyle);
-            Assert.AreEqual(10, analyzer.commandLineData.paddingSpacesCount);
-            Assert.AreEqual(932, analyzer.commandLineData.encoding.WindowsCodePage);
-            Assert.AreEqual(CommandLineData.PaddingChar.space, analyzer.commandLineData.paddingChar);
+            Assert.AreEqual(string.Empty, analyzer._commandLineData.FileName);
+            Assert.AreEqual("outdir\\outfile.xml", analyzer._commandLineData.OutputFileName);
+            Assert.AreEqual(CommandLineData.FileType.xml, analyzer._commandLineData.fileType);
+            Assert.AreEqual(CommandLineData.FormatStyle.unformat, analyzer._commandLineData.formatStyle);
+            Assert.AreEqual(10, analyzer._commandLineData.PaddingSpacesCount);
+            Assert.AreEqual(932, analyzer._commandLineData.Encoding.WindowsCodePage);
+            Assert.AreEqual(CommandLineData.PaddingChar.space, analyzer._commandLineData.paddingChar);
         }
 
         [TestMethod]
-        public void analyzeTest2() {
+        public void AnalyzeTest2() {
             var analyzer = new CommandLineArgsAnalyzer();
-            var res = analyzer.analyze(new string[] {
+            var res = analyzer.Analyze(new string[] {
                 "--csv",
                 "--format",
                 "--tab",
@@ -49,89 +49,89 @@ namespace DataFileFormatterTest.Command {
 
             Assert.AreEqual(0, res.resultCode);
 
-            Assert.AreEqual(string.Empty, analyzer.commandLineData.outputFileName);
-            Assert.AreEqual(CommandLineData.FileType.csv, analyzer.commandLineData.fileType);
-            Assert.AreEqual(CommandLineData.FormatStyle.format, analyzer.commandLineData.formatStyle);
-            Assert.AreEqual(CommandLineData.PaddingChar.tab, analyzer.commandLineData.paddingChar);
-            Assert.AreEqual("DataFileFormatterTest.dll", analyzer.commandLineData.fileName);
+            Assert.AreEqual(string.Empty, analyzer._commandLineData.OutputFileName);
+            Assert.AreEqual(CommandLineData.FileType.csv, analyzer._commandLineData.fileType);
+            Assert.AreEqual(CommandLineData.FormatStyle.format, analyzer._commandLineData.formatStyle);
+            Assert.AreEqual(CommandLineData.PaddingChar.tab, analyzer._commandLineData.paddingChar);
+            Assert.AreEqual("DataFileFormatterTest.dll", analyzer._commandLineData.FileName);
         }
 
         [TestMethod]
-        public void analyzeTest3() {
+        public void AnalyzeTest3() {
             var analyzer = new CommandLineArgsAnalyzer();
-            analyzer.analyze(new string[]{
+            analyzer.Analyze(new string[]{
                 "--json",
                 "--space",
                 "--charset",
                 "utf-32"
             });
 
-            Assert.AreEqual(CommandLineData.FileType.json, analyzer.commandLineData.fileType);
-            Assert.AreEqual(CommandLineData.PaddingChar.space, analyzer.commandLineData.paddingChar);
-            Assert.AreEqual(12000, analyzer.commandLineData.encoding.CodePage);
+            Assert.AreEqual(CommandLineData.FileType.json, analyzer._commandLineData.fileType);
+            Assert.AreEqual(CommandLineData.PaddingChar.space, analyzer._commandLineData.paddingChar);
+            Assert.AreEqual(12000, analyzer._commandLineData.Encoding.CodePage);
         }
 
         [TestMethod]
-        public void analyzeDefaultTest() {
+        public void AnalyzeDefaultTest() {
             var analyzer = new CommandLineArgsAnalyzer();
-            analyzer.analyze(new string[] { });
+            analyzer.Analyze(new string[] { });
 
-            Assert.AreEqual(string.Empty, analyzer.commandLineData.fileName);
-            Assert.AreEqual(CommandLineData.FileType.json, analyzer.commandLineData.fileType);
-            Assert.AreEqual(CommandLineData.FormatStyle.format, analyzer.commandLineData.formatStyle);
-            Assert.AreEqual(string.Empty, analyzer.commandLineData.outputFileName);
-            Assert.AreEqual(4, analyzer.commandLineData.paddingSpacesCount);
-            Assert.AreEqual(CommandLineData.PaddingChar.space, analyzer.commandLineData.paddingChar);
-            Assert.AreEqual(65001, analyzer.commandLineData.encoding.CodePage);
+            Assert.AreEqual(string.Empty, analyzer._commandLineData.FileName);
+            Assert.AreEqual(CommandLineData.FileType.json, analyzer._commandLineData.fileType);
+            Assert.AreEqual(CommandLineData.FormatStyle.format, analyzer._commandLineData.formatStyle);
+            Assert.AreEqual(string.Empty, analyzer._commandLineData.OutputFileName);
+            Assert.AreEqual(4, analyzer._commandLineData.PaddingSpacesCount);
+            Assert.AreEqual(CommandLineData.PaddingChar.space, analyzer._commandLineData.paddingChar);
+            Assert.AreEqual(65001, analyzer._commandLineData.Encoding.CodePage);
         }
 
         [TestMethod]
-        public void unknownOptionTest() {
+        public void UnknownOptionTest() {
             var analyzer = new CommandLineArgsAnalyzer();
-            var res = analyzer.analyze(new string[] { "--unknown" });
+            var res = analyzer.Analyze(new string[] { "--unknown" });
             Assert.AreEqual(51, res.resultCode);
-            Assert.IsFalse(res.canContinueProcess());
+            Assert.IsFalse(res.CanContinueProcess());
         }
 
         [TestMethod]
-        public void unknownCharsetTest() {
+        public void UnknownCharsetTest() {
             var analyzer = new CommandLineArgsAnalyzer();
-            var res = analyzer.analyze(new string[] { "--charset", "unknown" });
+            var res = analyzer.Analyze(new string[] { "--charset", "unknown" });
             Assert.AreEqual(53, res.resultCode);
         }
 
         [TestMethod]
-        public void charsetNotSetTest() {
+        public void CharsetNotSetTest() {
             var analyzer = new CommandLineArgsAnalyzer();
-            var res = analyzer.analyze(new string[] { "--charset" });
+            var res = analyzer.Analyze(new string[] { "--charset" });
             Assert.AreEqual(53, res.resultCode);
         }
 
         [TestMethod]
-        public void outFileNotSetTest() {
+        public void OutFileNotSetTest() {
             var analyzer = new CommandLineArgsAnalyzer();
-            var res = analyzer.analyze(new string[] { "--outfile" });
+            var res = analyzer.Analyze(new string[] { "--outfile" });
             Assert.AreEqual(2, res.resultCode);
         }
 
         [TestMethod]
-        public void paddingNotSetTest() {
+        public void PaddingNotSetTest() {
             var analyzer = new CommandLineArgsAnalyzer();
-            var res = analyzer.analyze(new string[] { "--paddingSpacesCount" });
+            var res = analyzer.Analyze(new string[] { "--paddingSpacesCount" });
             Assert.AreEqual(1, res.resultCode);
         }
 
         [TestMethod]
-        public void paddingNotNumberTest() {
+        public void PaddingNotNumberTest() {
             var analyzer = new CommandLineArgsAnalyzer();
-            var res = analyzer.analyze(new string[] { "--paddingSpacesCount", "A" });
+            var res = analyzer.Analyze(new string[] { "--paddingSpacesCount", "A" });
             Assert.AreEqual(1, res.resultCode);
         }
 
         [TestMethod]
-        public void paddingNotAvailableTest() {
+        public void PaddingNotAvailableTest() {
             var analyzer = new CommandLineArgsAnalyzer();
-            var res = analyzer.analyze(new string[] { "--paddingSpacesCount", "0" });
+            var res = analyzer.Analyze(new string[] { "--paddingSpacesCount", "0" });
             Assert.AreEqual(1, res.resultCode);
         }
     }

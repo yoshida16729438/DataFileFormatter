@@ -12,11 +12,11 @@ namespace DataFileFormatter.Command {
 
         internal FileType fileType { get; set; }
         internal FormatStyle formatStyle { get; set; }
-        internal string fileName { get; set; }
-        internal string outputFileName { get; set; }
-        internal int paddingSpacesCount { get; set; }
+        internal string FileName { get; set; }
+        internal string OutputFileName { get; set; }
+        internal int PaddingSpacesCount { get; set; }
         internal PaddingChar paddingChar { get; set; }
-        internal Encoding encoding { get; set; }
+        internal Encoding Encoding { get; set; }
 
 
         //enums

@@ -17,13 +17,13 @@ namespace DataFileFormatter.Command {
         /// <summary>
         /// properties
         /// </summary>
-        internal readonly CommandLineData commandLineData;
+        internal readonly CommandLineData _commandLineData;
 
         /// <summary>
         /// constructor
         /// </summary>
         internal CommandLineArgsAnalyzer() {
-            this.commandLineData = new CommandLineData();
+            _commandLineData = new CommandLineData();
         }
 
         /// <summary>
@@ -31,26 +31,24 @@ namespace DataFileFormatter.Command {
         /// </summary>
         /// <param name="args">command line args</param>
         /// <returns></returns>
-        internal ProcessResult analyze(string[] args) {
+        internal ProcessResult Analyze(string[] args) {
 
-            ProcessResult result;
+            SetDefault();
 
-            this.setDefault();
-
-            return this.analyzeInternal(args);
+            return AnalyzeInternal(args);
         }
 
         /// <summary>
         /// initialize
         /// </summary>
-        private void setDefault() {
-            this.commandLineData.fileType = FileType.json;
-            this.commandLineData.formatStyle = FormatStyle.format;
-            this.commandLineData.fileName = string.Empty;
-            this.commandLineData.outputFileName = string.Empty;
-            this.commandLineData.paddingSpacesCount = 4;
-            this.commandLineData.paddingChar = PaddingChar.space;
-            this.commandLineData.encoding = Encoding.UTF8;
+        private void SetDefault() {
+            _commandLineData.FileType = FileType.json;
+            _commandLineData.FormatStyle = FormatStyle.format;
+            _commandLineData.FileName = string.Empty;
+            _commandLineData.OutputFileName = string.Empty;
+            _commandLineData.PaddingSpacesCount = 4;
+            _commandLineData.paddingChar = PaddingChar.space;
+            _commandLineData.Encoding = Encoding.UTF8;
         }
 
         /// <summary>
@@ -58,79 +56,79 @@ namespace DataFileFormatter.Command {
         /// </summary>
         /// <param name="args">command line args</param>
         /// <returns></returns>
-        private ProcessResult analyzeInternal(string[] args) {
+        private ProcessResult AnalyzeInternal(string[] args) {
             for (int i = 0; i < args.Length; i++) {
                 switch (args[i]) {
                     case CommandLineOptions.JSON:
-                        this.commandLineData.fileType = FileType.json;
+                        _commandLineData.FileType = FileType.json;
                         break;
 
                     case CommandLineOptions.XML:
-                        this.commandLineData.fileType = FileType.xml;
+                        _commandLineData.FileType = FileType.xml;
                         break;
 
                     case CommandLineOptions.CSV:
-                        this.commandLineData.fileType = FileType.csv;
+                        _commandLineData.FileType = FileType.csv;
                         break;
 
                     case CommandLineOptions.FORMAT:
-                        this.commandLineData.formatStyle = FormatStyle.format;
+                        _commandLineData.FormatStyle = FormatStyle.format;
                         break;
 
                     case CommandLineOptions.UNFORMAT:
-                        this.commandLineData.formatStyle = FormatStyle.unformat;
+                        _commandLineData.FormatStyle = FormatStyle.unformat;
                         break;
 
                     case CommandLineOptions.OUTPUTFILE:
                         if (i < args.Length - 1) {
-                            this.commandLineData.outputFileName = args[i + 1];
+                            _commandLineData.OutputFileName = args[i + 1];
                             i++;
                         } else {
-                            return ProcessResult.optionErrorForOutputFileNotSet();
+                            return ProcessResult.OptionErrorForOutputFileNotSet();
                         }
                         break;
 
                     case CommandLineOptions.PADDING_SPACES_COUNT:
                         if (i < args.Length - 1 && int.TryParse(args[i + 1], out int count) && count > 0) {
-                            this.commandLineData.paddingSpacesCount = count;
+                            _commandLineData.PaddingSpacesCount = count;
                             i++;
                         } else {
-                            return ProcessResult.optionErrorForPaddingSpace();
+                            return ProcessResult.OptionErrorForPaddingSpace();
                         }
                         break;
 
                     case CommandLineOptions.PADDING_SPACE:
-                        this.commandLineData.paddingChar = PaddingChar.space;
+                        _commandLineData.paddingChar = PaddingChar.space;
                         break;
 
                     case CommandLineOptions.PADDING_TAB:
-                        this.commandLineData.paddingChar = PaddingChar.tab;
+                        _commandLineData.paddingChar = PaddingChar.tab;
                         break;
 
                     case CommandLineOptions.CHARSET:
                         if (i < args.Length - 1) {
                             try {
-                                this.commandLineData.encoding = System.Text.Encoding.GetEncoding(args[i + 1]);
+                                _commandLineData.Encoding = System.Text.Encoding.GetEncoding(args[i + 1]);
                                 i++;
-                            } catch (ArgumentException ex) {
-                                return ProcessResult.notAvailableCharset();
+                            } catch (ArgumentException) {
+                                return ProcessResult.NotAvailableCharset();
                             }
                         } else {
-                            return ProcessResult.notAvailableCharset();
+                            return ProcessResult.NotAvailableCharset();
                         }
                         break;
 
                     default:
                         if (System.IO.File.Exists(args[i])) {
-                            this.commandLineData.fileName = args[i];
+                            _commandLineData.FileName = args[i];
                         } else {
-                            return ProcessResult.inputFileNotFound(args[i]);
+                            return ProcessResult.InputFileNotFound(args[i]);
                         }
                         break;
                 }
             }
 
-            return ProcessResult.normal();
+            return ProcessResult.Normal();
         }
     }
 }
