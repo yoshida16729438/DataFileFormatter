@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DataFileFormatter.Process;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +15,7 @@ namespace DataFileFormatter.ProcessResults {
         /// <summary>
         /// result code
         /// </summary>
-        internal int resultCode { get; }
+        internal ResultCode ResultCode { get; }
 
         /// <summary>
         /// messages
@@ -22,39 +23,11 @@ namespace DataFileFormatter.ProcessResults {
         internal string Message { get; }
 
         /// <summary>
-        /// result codes
-        /// </summary>
-        private enum ResultCode {
-
-            //common for continue
-            OK = 0,
-
-            //common for command line options error
-            NG_PADDING_SPACE_NOT_AVAILABLE_VALUE = 1,
-            NG_OUTPUT_FILE_NAME_NOT_SET = 2,
-
-            //for other common failure
-            NG_FILE_NOT_FOUND = 51,
-            NG_NO_INPUT_DATA_SPECIFIED = 52,
-            NG_NOT_AVAILABLE_CHARSET = 53,
-            NG_FAILED_TO_OUTPUT_FILE = 54,
-
-            //for json
-            NG_FAILED_TO_LOAD_JSON = 101,
-
-            //for xml
-            NG_FAILED_TO_LOAD_XML = 201,
-
-            //for csv
-            NG_FAILED_TO_LOAD_CSV = 301
-        }
-
-        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="resultCode">result code</param>
         private ProcessResult(ResultCode resultCode) {
-            this.resultCode = (int)resultCode;
+            ResultCode = resultCode;
             Message = string.Empty;
         }
 
@@ -64,7 +37,7 @@ namespace DataFileFormatter.ProcessResults {
         /// <param name="resultCode">result code</param>
         /// <param name="message">message</param>
         private ProcessResult(ResultCode resultCode, string message) {
-            this.resultCode = (int)resultCode;
+            ResultCode = resultCode;
             Message = message;
         }
 
@@ -73,7 +46,7 @@ namespace DataFileFormatter.ProcessResults {
         /// </summary>
         /// <returns></returns>
         internal bool CanContinueProcess() {
-            return resultCode == (int)ResultCode.OK;
+            return ResultCode == ResultCode.OK;
         }
 
         /// <summary>
@@ -98,7 +71,7 @@ namespace DataFileFormatter.ProcessResults {
         /// </summary>
         /// <returns></returns>
         internal static ProcessResult OptionErrorForPaddingSpace() {
-            return new ProcessResult(ResultCode.NG_PADDING_SPACE_NOT_AVAILABLE_VALUE, "padding spaces count was not set / not number/ not greater than 0");
+            return new ProcessResult(ResultCode.NG_INDENT_SPACES_COUNT_NOT_AVAILABLE_VALUE, "padding spaces count was not set / not number/ not greater than 0");
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using DataFileFormatter.Command;
+using DataFileFormatter.Process;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -19,22 +20,22 @@ namespace DataFileFormatterTest.Command {
                 "--unformat",
                 "--outfile",
                 "outdir\\outfile.xml",
-                "--paddingSpacesCount",
+                "--indentSpacesCount",
                 "10",
                 "--charset",
                 "shift-jis"
             });
             Assert.IsTrue(res.CanContinueProcess());
-            Assert.AreEqual(0, res.resultCode);
+            Assert.AreEqual(ResultCode.OK, res.ResultCode);
             Assert.AreEqual(string.Empty, res.Message);
 
             Assert.AreEqual(string.Empty, analyzer._commandLineData.FileName);
             Assert.AreEqual("outdir\\outfile.xml", analyzer._commandLineData.OutputFileName);
-            Assert.AreEqual(CommandLineData.FileType.xml, analyzer._commandLineData.fileType);
-            Assert.AreEqual(CommandLineData.FormatStyle.unformat, analyzer._commandLineData.formatStyle);
-            Assert.AreEqual(10, analyzer._commandLineData.PaddingSpacesCount);
+            Assert.AreEqual(ProcessType.xml, analyzer._commandLineData.ProcessType);
+            Assert.AreEqual(FormatStyle.unformat, analyzer._commandLineData.FormatStyle);
+            Assert.AreEqual(10, analyzer._commandLineData.IndentSpacesCount);
             Assert.AreEqual(932, analyzer._commandLineData.Encoding.WindowsCodePage);
-            Assert.AreEqual(CommandLineData.PaddingChar.space, analyzer._commandLineData.paddingChar);
+            Assert.AreEqual(IndentChar.space, analyzer._commandLineData.IndentChar);
         }
 
         [TestMethod]
@@ -47,12 +48,12 @@ namespace DataFileFormatterTest.Command {
                 "DataFileFormatterTest.dll"
             });
 
-            Assert.AreEqual(0, res.resultCode);
+            Assert.AreEqual(ResultCode.OK, res.ResultCode);
 
             Assert.AreEqual(string.Empty, analyzer._commandLineData.OutputFileName);
-            Assert.AreEqual(CommandLineData.FileType.csv, analyzer._commandLineData.fileType);
-            Assert.AreEqual(CommandLineData.FormatStyle.format, analyzer._commandLineData.formatStyle);
-            Assert.AreEqual(CommandLineData.PaddingChar.tab, analyzer._commandLineData.paddingChar);
+            Assert.AreEqual(ProcessType.csv, analyzer._commandLineData.ProcessType);
+            Assert.AreEqual(FormatStyle.format, analyzer._commandLineData.FormatStyle);
+            Assert.AreEqual(IndentChar.tab, analyzer._commandLineData.IndentChar);
             Assert.AreEqual("DataFileFormatterTest.dll", analyzer._commandLineData.FileName);
         }
 
@@ -66,8 +67,8 @@ namespace DataFileFormatterTest.Command {
                 "utf-32"
             });
 
-            Assert.AreEqual(CommandLineData.FileType.json, analyzer._commandLineData.fileType);
-            Assert.AreEqual(CommandLineData.PaddingChar.space, analyzer._commandLineData.paddingChar);
+            Assert.AreEqual(ProcessType.json, analyzer._commandLineData.ProcessType);
+            Assert.AreEqual(IndentChar.space, analyzer._commandLineData.IndentChar);
             Assert.AreEqual(12000, analyzer._commandLineData.Encoding.CodePage);
         }
 
@@ -77,11 +78,11 @@ namespace DataFileFormatterTest.Command {
             analyzer.Analyze(new string[] { });
 
             Assert.AreEqual(string.Empty, analyzer._commandLineData.FileName);
-            Assert.AreEqual(CommandLineData.FileType.json, analyzer._commandLineData.fileType);
-            Assert.AreEqual(CommandLineData.FormatStyle.format, analyzer._commandLineData.formatStyle);
+            Assert.AreEqual(ProcessType.json, analyzer._commandLineData.ProcessType);
+            Assert.AreEqual(FormatStyle.format, analyzer._commandLineData.FormatStyle);
             Assert.AreEqual(string.Empty, analyzer._commandLineData.OutputFileName);
-            Assert.AreEqual(4, analyzer._commandLineData.PaddingSpacesCount);
-            Assert.AreEqual(CommandLineData.PaddingChar.space, analyzer._commandLineData.paddingChar);
+            Assert.AreEqual(4, analyzer._commandLineData.IndentSpacesCount);
+            Assert.AreEqual(IndentChar.space, analyzer._commandLineData.IndentChar);
             Assert.AreEqual(65001, analyzer._commandLineData.Encoding.CodePage);
         }
 
@@ -89,7 +90,7 @@ namespace DataFileFormatterTest.Command {
         public void UnknownOptionTest() {
             var analyzer = new CommandLineArgsAnalyzer();
             var res = analyzer.Analyze(new string[] { "--unknown" });
-            Assert.AreEqual(51, res.resultCode);
+            Assert.AreEqual(ResultCode.NG_FILE_NOT_FOUND, res.ResultCode);
             Assert.IsFalse(res.CanContinueProcess());
         }
 
@@ -97,42 +98,42 @@ namespace DataFileFormatterTest.Command {
         public void UnknownCharsetTest() {
             var analyzer = new CommandLineArgsAnalyzer();
             var res = analyzer.Analyze(new string[] { "--charset", "unknown" });
-            Assert.AreEqual(53, res.resultCode);
+            Assert.AreEqual(ResultCode.NG_NOT_AVAILABLE_CHARSET, res.ResultCode);
         }
 
         [TestMethod]
         public void CharsetNotSetTest() {
             var analyzer = new CommandLineArgsAnalyzer();
             var res = analyzer.Analyze(new string[] { "--charset" });
-            Assert.AreEqual(53, res.resultCode);
+            Assert.AreEqual(ResultCode.NG_NOT_AVAILABLE_CHARSET, res.ResultCode);
         }
 
         [TestMethod]
         public void OutFileNotSetTest() {
             var analyzer = new CommandLineArgsAnalyzer();
             var res = analyzer.Analyze(new string[] { "--outfile" });
-            Assert.AreEqual(2, res.resultCode);
+            Assert.AreEqual(ResultCode.NG_OUTPUT_FILE_NAME_NOT_SET, res.ResultCode);
         }
 
         [TestMethod]
         public void PaddingNotSetTest() {
             var analyzer = new CommandLineArgsAnalyzer();
-            var res = analyzer.Analyze(new string[] { "--paddingSpacesCount" });
-            Assert.AreEqual(1, res.resultCode);
+            var res = analyzer.Analyze(new string[] { "--indentSpacesCount" });
+            Assert.AreEqual(ResultCode.NG_INDENT_SPACES_COUNT_NOT_AVAILABLE_VALUE, res.ResultCode);
         }
 
         [TestMethod]
         public void PaddingNotNumberTest() {
             var analyzer = new CommandLineArgsAnalyzer();
-            var res = analyzer.Analyze(new string[] { "--paddingSpacesCount", "A" });
-            Assert.AreEqual(1, res.resultCode);
+            var res = analyzer.Analyze(new string[] { "--indentSpacesCount", "A" });
+            Assert.AreEqual(ResultCode.NG_INDENT_SPACES_COUNT_NOT_AVAILABLE_VALUE, res.ResultCode);
         }
 
         [TestMethod]
         public void PaddingNotAvailableTest() {
             var analyzer = new CommandLineArgsAnalyzer();
-            var res = analyzer.Analyze(new string[] { "--paddingSpacesCount", "0" });
-            Assert.AreEqual(1, res.resultCode);
+            var res = analyzer.Analyze(new string[] { "--indentSpacesCount", "0" });
+            Assert.AreEqual(ResultCode.NG_INDENT_SPACES_COUNT_NOT_AVAILABLE_VALUE, res.ResultCode);
         }
     }
 }

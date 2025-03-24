@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static DataFileFormatter.Command.CommandLineData;
+using DataFileFormatter.Process;
 using DataFileFormatter.ProcessResults;
 using System.Globalization;
 
@@ -17,13 +17,13 @@ namespace DataFileFormatter.Command {
         /// <summary>
         /// properties
         /// </summary>
-        internal readonly CommandLineData _commandLineData;
+        internal readonly ProcessParameter _commandLineData;
 
         /// <summary>
         /// constructor
         /// </summary>
         internal CommandLineArgsAnalyzer() {
-            _commandLineData = new CommandLineData();
+            _commandLineData = new ProcessParameter();
         }
 
         /// <summary>
@@ -42,12 +42,12 @@ namespace DataFileFormatter.Command {
         /// initialize
         /// </summary>
         private void SetDefault() {
-            _commandLineData.FileType = FileType.json;
+            _commandLineData.ProcessType = ProcessType.json;
             _commandLineData.FormatStyle = FormatStyle.format;
             _commandLineData.FileName = string.Empty;
             _commandLineData.OutputFileName = string.Empty;
-            _commandLineData.PaddingSpacesCount = 4;
-            _commandLineData.paddingChar = PaddingChar.space;
+            _commandLineData.IndentSpacesCount = 4;
+            _commandLineData.IndentChar = IndentChar.space;
             _commandLineData.Encoding = Encoding.UTF8;
         }
 
@@ -60,15 +60,15 @@ namespace DataFileFormatter.Command {
             for (int i = 0; i < args.Length; i++) {
                 switch (args[i]) {
                     case CommandLineOptions.JSON:
-                        _commandLineData.FileType = FileType.json;
+                        _commandLineData.ProcessType = ProcessType.json;
                         break;
 
                     case CommandLineOptions.XML:
-                        _commandLineData.FileType = FileType.xml;
+                        _commandLineData.ProcessType = ProcessType.xml;
                         break;
 
                     case CommandLineOptions.CSV:
-                        _commandLineData.FileType = FileType.csv;
+                        _commandLineData.ProcessType = ProcessType.csv;
                         break;
 
                     case CommandLineOptions.FORMAT:
@@ -88,21 +88,21 @@ namespace DataFileFormatter.Command {
                         }
                         break;
 
-                    case CommandLineOptions.PADDING_SPACES_COUNT:
+                    case CommandLineOptions.INDENT_SPACES_COUNT:
                         if (i < args.Length - 1 && int.TryParse(args[i + 1], out int count) && count > 0) {
-                            _commandLineData.PaddingSpacesCount = count;
+                            _commandLineData.IndentSpacesCount = count;
                             i++;
                         } else {
                             return ProcessResult.OptionErrorForPaddingSpace();
                         }
                         break;
 
-                    case CommandLineOptions.PADDING_SPACE:
-                        _commandLineData.paddingChar = PaddingChar.space;
+                    case CommandLineOptions.INDENT_SPACE:
+                        _commandLineData.IndentChar = IndentChar.space;
                         break;
 
-                    case CommandLineOptions.PADDING_TAB:
-                        _commandLineData.paddingChar = PaddingChar.tab;
+                    case CommandLineOptions.INDENT_TAB:
+                        _commandLineData.IndentChar = IndentChar.tab;
                         break;
 
                     case CommandLineOptions.CHARSET:

@@ -16,9 +16,9 @@ namespace DataFileFormatter.Command {
         internal const string FORMAT = "--format";
         internal const string UNFORMAT = "--unformat";
         internal const string OUTPUTFILE = "--outfile";
-        internal const string PADDING_SPACES_COUNT = "--paddingSpacesCount";
-        internal const string PADDING_TAB = "--tab";
-        internal const string PADDING_SPACE = "--space";
+        internal const string INDENT_SPACES_COUNT = "--indentSpacesCount";
+        internal const string INDENT_TAB = "--tab";
+        internal const string INDENT_SPACE = "--space";
         internal const string CHARSET = "--charset";
     }
 }
