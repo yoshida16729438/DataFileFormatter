@@ -40,6 +40,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Text.Json, Version=8.0.0.5, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -49,7 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Command\CommandLineArgsAnalyzer.cs" />
-    <Compile Include="Formatter\IFormatter.cs" />
+    <Compile Include="Formatter\IDataFormatter.cs" />
     <Compile Include="Formatter\JsonFormatter.cs" />
     <Compile Include="Process\FormatStyle.cs" />
     <Compile Include="Process\IndentChar.cs" />
@@ -64,8 +65,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ProcessResults\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataFileFormatter.ProcessResults {
+namespace DataFileFormatter.Process {
 
     /// <summary>
     /// result codes definitions
@@ -21,15 +21,6 @@ namespace DataFileFormatter.ProcessResults {
         /// messages
         /// </summary>
         internal string Message { get; }
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="resultCode">result code</param>
-        private ProcessResult(ResultCode resultCode) {
-            ResultCode = resultCode;
-            Message = string.Empty;
-        }
 
         /// <summary>
         /// constructor
@@ -54,7 +45,7 @@ namespace DataFileFormatter.ProcessResults {
         /// </summary>
         /// <returns></returns>
         internal static ProcessResult Normal() {
-            return new ProcessResult(ResultCode.OK);
+            return new ProcessResult(ResultCode.OK, string.Empty);
         }
 
         /// <summary>
