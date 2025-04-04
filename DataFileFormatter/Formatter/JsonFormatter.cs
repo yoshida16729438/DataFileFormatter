@@ -1,4 +1,5 @@
-﻿using DataFileFormatter.Process;
+﻿using DataFileFormatter.Formatter.Json;
+using DataFileFormatter.Process;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +38,8 @@ namespace DataFileFormatter.Formatter {
         }
 
         public void Format(IndentChar indentChar, int indent) {
-
+            CustomJsonSerializer serializer = new CustomJsonSerializer();
+            _processedJson = serializer.FormatIndented(_jsonNode, indentChar, indent);
         }
 
         public void Unformat() {
