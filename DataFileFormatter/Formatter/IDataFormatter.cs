@@ -16,13 +16,12 @@ namespace DataFileFormatter.Formatter {
 
         ProcessResult LoadFromFile(string fileName, Encoding encoding);
 
-        void Format(IndentChar indentChar,int indent);
+        void Format(IndentChar indentChar, int indent);
 
         void Unformat();
 
-        ProcessResult SaveToFile(string fileName,Encoding encoding);
+        ProcessResult SaveToFile(string fileName, Encoding encoding);
 
-        void OutputToStdout();
-
+        string GetProcessedData();
     }
 }

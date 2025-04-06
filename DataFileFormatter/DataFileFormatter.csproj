@@ -41,6 +41,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL" />
+    <Reference Include="System.Text.Encodings.Web, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL" />
     <Reference Include="System.Text.Json, Version=8.0.0.5, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -51,10 +52,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Command\CommandLineArgsAnalyzer.cs" />
-    <Compile Include="Formatter\Json\CustomJsonSerializer.cs" />
     <Compile Include="Formatter\IDataFormatter.cs" />
     <Compile Include="Formatter\JsonFormatter.cs" />
-    <Compile Include="Formatter\Json\IndentStringBuilder.cs" />
     <Compile Include="Process\FormatStyle.cs" />
     <Compile Include="Process\IndentChar.cs" />
     <Compile Include="Process\ProcessParameter.cs" />

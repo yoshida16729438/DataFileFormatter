@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataFileFormatter.Process;
-using DataFileFormatter.Process;
 using System.Globalization;
 
 namespace DataFileFormatter.Command {

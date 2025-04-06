@@ -53,12 +53,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Command\CommandLineArgsAnalyzerTest.cs" />
-    <Compile Include="Formatter\Json\CustomJsonSerializerTest.cs" />
+    <Compile Include="Formatter\JsonFormatterTest.cs" />
     <Compile Include="UnitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="testdata\json\escapedJsonInput.json" />
+    <None Include="testdata\json\escapedJsonOutput.json" />
+    <None Include="testdata\json\indentWithFourSpaces.json" />
+    <None Include="testdata\json\indentWithTab.json" />
+    <None Include="testdata\json\unindented.json" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataFileFormatter\DataFileFormatter.csproj">

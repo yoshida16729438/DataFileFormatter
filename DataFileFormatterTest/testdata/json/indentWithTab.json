@@ -1,0 +1,20 @@
+{
+	"nullProp": null,
+	"numberProp": 1,
+	"stringProp": "text",
+	"boolProp1": true,
+	"boolProp2": false,
+	"objectProp": {
+		"childStringProp": "childText",
+		"grandChildObject": {
+			"grandChildProp": "grandChildValue"
+		}
+	},
+	"emptyObjectProp": {},
+	"arrayProp": [
+		1,
+		2,
+		3
+	],
+	"emptyArrayProp": []
+}
