@@ -129,5 +129,12 @@ namespace DataFileFormatter.Process {
         internal static ProcessResult FailedToLoadCsv() {
             return new ProcessResult(ResultCode.NG_FAILED_TO_LOAD_CSV, "failed to load csv");
         }
+
+        public override bool Equals(object obj) {
+            if (obj != null && obj is ProcessResult pr) {
+                return ResultCode == pr.ResultCode && Message == pr.Message;
+            }
+            return false;
+        }
     }
 }

@@ -22,15 +22,20 @@ namespace DataFileFormatter.Formatter {
 
         private string _processedJson;
 
+        /// <inheritdoc/>
         public ProcessResult LoadFromText(string text) {
-            _jsonNode = JsonNode.Parse(text);
-            if (_jsonNode == null) return ProcessResult.FailedToLoadJson();
-            else return ProcessResult.Normal();
+            try {
+                _jsonNode = JsonNode.Parse(text);
+            } catch (JsonException) {
+                return ProcessResult.FailedToLoadJson();
+            }
+            return ProcessResult.Normal();
         }
 
+        /// <inheritdoc/>
         public ProcessResult LoadFromFile(string fileName, Encoding encoding) {
             try {
-                using (var sr = new System.IO.StreamReader(fileName, encoding)) {
+                using (var sr = new StreamReader(fileName, encoding)) {
                     return LoadFromText(sr.ReadToEnd());
                 }
             } catch (Exception) {
@@ -38,6 +43,7 @@ namespace DataFileFormatter.Formatter {
             }
         }
 
+        /// <inheritdoc/>
         public void Format(IndentChar indentChar, int indent) {
             JsonSerializerOptions options = new JsonSerializerOptions() { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, WriteIndented = true };
             string indentedJson = _jsonNode.ToJsonString(options);
@@ -49,11 +55,13 @@ namespace DataFileFormatter.Formatter {
             }));
         }
 
+        /// <inheritdoc/>
         public void Unformat() {
             var options = new JsonSerializerOptions() { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, WriteIndented = false };
             _processedJson = _jsonNode.ToJsonString(options);
         }
 
+        /// <inheritdoc/>
         public ProcessResult SaveToFile(string fileName, Encoding encoding) {
             try {
                 using (var sw = new StreamWriter(fileName, false, encoding)) {
@@ -65,6 +73,7 @@ namespace DataFileFormatter.Formatter {
             }
         }
 
+        /// <inheritdoc/>
         public string GetProcessedData() {
             return _processedJson;
         }
