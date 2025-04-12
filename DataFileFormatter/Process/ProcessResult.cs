@@ -99,6 +99,14 @@ namespace DataFileFormatter.Process {
         }
 
         /// <summary>
+        /// create instance for failed to load from stdin
+        /// </summary>
+        /// <returns></returns>
+        internal static ProcessResult FailedToLoadFromStdin() {
+            return new ProcessResult(ResultCode.NG_FAILED_TO_LOAD_FROM_STDIN, "failed to read data from stdin");
+        }
+
+        /// <summary>
         /// create instance for file output failed
         /// </summary>
         /// <returns></returns>
@@ -135,6 +143,11 @@ namespace DataFileFormatter.Process {
                 return ResultCode == pr.ResultCode && Message == pr.Message;
             }
             return false;
+        }
+
+        public override int GetHashCode() {
+            return (ResultCode, Message).GetHashCode();
+            
         }
     }
 }

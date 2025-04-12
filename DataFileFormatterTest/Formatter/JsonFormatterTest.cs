@@ -22,7 +22,7 @@ namespace DataFileFormatterTest.Formatter {
 
         private const string TestDataFolderPath = "..\\..\\testdata\\json";
 
-        [AssemblyInitialize]
+        [ClassInitialize]
         public static void LoadTestData(TestContext testContext) {
             _unindented = LoadFromFile("unindented.json");
             _indentWithFourSpaces = LoadFromFile("indentWithFourSpaces.json");

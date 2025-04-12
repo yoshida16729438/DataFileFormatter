@@ -22,7 +22,8 @@ namespace DataFileFormatter.Process {
         NG_FILE_NOT_FOUND = 51,
         NG_NO_INPUT_DATA_SPECIFIED = 52,
         NG_NOT_AVAILABLE_CHARSET = 53,
-        NG_FAILED_TO_OUTPUT_FILE = 54,
+        NG_FAILED_TO_LOAD_FROM_STDIN = 54,
+        NG_FAILED_TO_OUTPUT_FILE = 55,
 
         //for json
         NG_FAILED_TO_LOAD_JSON = 101,
