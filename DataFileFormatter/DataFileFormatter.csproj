@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Command\CommandLineArgsAnalyzer.cs" />
+    <Compile Include="Stdin\ConsoleReader.cs" />
     <Compile Include="Formatter\IDataFormatter.cs" />
     <Compile Include="Formatter\JsonFormatter.cs" />
     <Compile Include="Process\FormatStyle.cs" />
