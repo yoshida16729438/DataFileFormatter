@@ -13,7 +13,6 @@ namespace DataFileFormatterTest {
     [TestClass]
     public class UnitTest {
 
-        private const string TestDataFolderPath = "..\\..\\testdata\\json\\";
         private static string _workFolder;
 
         [ClassInitialize]
@@ -28,7 +27,7 @@ namespace DataFileFormatterTest {
 
             using (MemoryStream ms = new MemoryStream()) {
                 Encoding sjis = Encoding.GetEncoding("shift-jis");
-                foreach (string line in File.ReadAllLines($"{TestDataFolderPath}unindented.json", Encoding.GetEncoding("UTF-8"))) {
+                foreach (string line in File.ReadAllLines(Path.Combine(Const.TestDataFolderPath,"unindented.json"), Encoding.GetEncoding("UTF-8"))) {
                     byte[] data = sjis.GetBytes(line);
                     ms.Write(data, 0, data.Length);
                 }
@@ -48,7 +47,7 @@ namespace DataFileFormatterTest {
                 }
             }
 
-            string expected = File.ReadAllText($"{TestDataFolderPath}indentWithFourSpaces.json");
+            string expected = File.ReadAllText(Path.Combine(Const.TestDataFolderPath, "indentWithFourSpaces.json"));
             string actual = File.ReadAllText(output);
             Assert.AreEqual(expected, actual);
         }
