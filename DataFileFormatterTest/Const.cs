@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataFileFormatterTest {
     internal class Const {
-        internal const string TestDataFolderPath = @"..\..\testdata\json";
+        private const string TestDataFolderPath = @"..\..\testdata\";
+        internal const string TestJsonFolderPath = TestDataFolderPath + "json";
     }
 }
