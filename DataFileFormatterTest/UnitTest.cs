@@ -1,8 +1,6 @@
 ﻿using DataFileFormatter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.CodeDom;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;

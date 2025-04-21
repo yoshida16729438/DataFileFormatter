@@ -3,15 +3,7 @@ using DataFileFormatter.Formatter;
 using DataFileFormatter.Process;
 using DataFileFormatter.Stdin;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Text;
-using System.Text.Json.Nodes;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace DataFileFormatter {

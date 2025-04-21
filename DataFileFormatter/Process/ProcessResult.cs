@@ -1,11 +1,4 @@
-﻿using DataFileFormatter.Process;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DataFileFormatter.Process {
+﻿namespace DataFileFormatter.Process {
 
     /// <summary>
     /// result codes definitions
@@ -147,7 +140,7 @@ namespace DataFileFormatter.Process {
 
         public override int GetHashCode() {
             return (ResultCode, Message).GetHashCode();
-            
+
         }
     }
 }
