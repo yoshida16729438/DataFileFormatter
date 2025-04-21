@@ -18,8 +18,10 @@ namespace DataFileFormatterTest.Stdin {
 
         [TestMethod]
         public async Task TestRead() {
-            string expected = File.ReadAllText(Path.Combine(Const.TestDataFolderPath, "unindented.json"));
-            using (TextReader reader = new StreamReader(Path.Combine(Const.TestDataFolderPath, "unindented.json"))) {
+
+            string inFilePath = TestContextHandler.GetTestDataPath("unindented.json");
+            string expected = File.ReadAllText(inFilePath);
+            using (TextReader reader = new StreamReader(inFilePath)) {
                 ConsoleReader consoleReader = new ConsoleReader(reader);
                 (ProcessResult result, string actual) = await consoleReader.ReadAsync();
                 Assert.AreEqual(ProcessResult.Normal(), result);

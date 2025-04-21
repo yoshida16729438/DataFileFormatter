@@ -18,35 +18,35 @@ namespace DataFileFormatterTest.Formatter {
         private static string _indentWithTab;
         private static string _escapedJsonInput;
         private static string _escapedJsonOutput;
-        private static string _workFolder;
 
         [ClassInitialize]
-        public static void LoadTestData(TestContext testContext) {
+        public static void LoadTestContext(TestContext _) {
             _unindented = LoadFromFile("unindented.json");
             _indentWithFourSpaces = LoadFromFile("indentWithFourSpaces.json");
             _indentWithTab = LoadFromFile("indentWithTab.json");
             _escapedJsonInput = LoadFromFile("escapedJsonInput.json");
             _escapedJsonOutput = LoadFromFile("escapedJsonOutput.json");
-            _workFolder = testContext.TestRunDirectory;
         }
 
         private static string LoadFromFile(string fileName) {
-            using (StreamReader streamReader = new StreamReader(Path.Combine(Const.TestDataFolderPath, fileName))) return streamReader.ReadToEnd();
+            using (StreamReader streamReader = new StreamReader(TestContextHandler.GetTestDataPath(fileName))) return streamReader.ReadToEnd();
         }
 
         [TestMethod]
         public void FormatWithFourSpacesTest() {
             JsonFormatter formatter = new JsonFormatter();
-            Assert.AreEqual(ProcessResult.Normal(), formatter.LoadFromFile(Path.Combine(Const.TestDataFolderPath, "unindented.json"), Encoding.UTF8));
+            Assert.AreEqual(ProcessResult.Normal(), formatter.LoadFromFile(TestContextHandler.GetTestDataPath("unindented.json"), Encoding.UTF8));
             formatter.Format(IndentChar.space, 4);
-            Assert.AreEqual(ProcessResult.Normal(), formatter.SaveToFile(Path.Combine(_workFolder, "output.json"), Encoding.UTF8));
-            using (StreamReader sr = new StreamReader(Path.Combine(_workFolder, "output.json"))) Assert.AreEqual(_indentWithFourSpaces, sr.ReadToEnd());
+
+            string outputFilePath = TestContextHandler.GetOutputFilePath("output.json");
+            Assert.AreEqual(ProcessResult.Normal(), formatter.SaveToFile(outputFilePath, Encoding.UTF8));
+            using (StreamReader sr = new StreamReader(outputFilePath)) Assert.AreEqual(_indentWithFourSpaces, sr.ReadToEnd());
         }
 
         [TestMethod]
         public void FormatWithTabTest() {
             JsonFormatter formatter = new JsonFormatter();
-            Assert.AreEqual(ProcessResult.Normal(), formatter.LoadFromFile(Path.Combine(Const.TestDataFolderPath, "indentWithFourSpaces.json"), Encoding.UTF8));
+            Assert.AreEqual(ProcessResult.Normal(), formatter.LoadFromFile(TestContextHandler.GetTestDataPath("indentWithFourSpaces.json"), Encoding.UTF8));
             formatter.Format(IndentChar.tab, 1);
             Assert.AreEqual(_indentWithTab, formatter.GetProcessedData());
         }
@@ -54,7 +54,7 @@ namespace DataFileFormatterTest.Formatter {
         [TestMethod]
         public void UnformatTest() {
             JsonFormatter formatter = new JsonFormatter();
-            Assert.AreEqual(ProcessResult.Normal(), formatter.LoadFromFile(Path.Combine(Const.TestDataFolderPath, "indentWithTab.json"), Encoding.UTF8));
+            Assert.AreEqual(ProcessResult.Normal(), formatter.LoadFromFile(TestContextHandler.GetTestDataPath("indentWithTab.json"), Encoding.UTF8));
             formatter.Unformat();
             Assert.AreEqual(_unindented, formatter.GetProcessedData());
         }
@@ -94,13 +94,15 @@ namespace DataFileFormatterTest.Formatter {
             JsonFormatter formatter = new JsonFormatter();
             formatter.LoadFromText("{}");
             formatter.Unformat();
-            Assert.AreEqual(ProcessResult.FailedToOutputFile(_workFolder), formatter.SaveToFile(_workFolder, Encoding.UTF8));
+
+            string outFilePath = TestContextHandler.GetOutputFilePath(string.Empty);
+            Assert.AreEqual(ProcessResult.FailedToOutputFile(outFilePath), formatter.SaveToFile(outFilePath, Encoding.UTF8));
         }
 
         [TestMethod]
         public void CannotLoadTest() {
             JsonFormatter formatter = new JsonFormatter();
-            Assert.AreEqual(ProcessResult.FailedToLoadJson(), formatter.LoadFromFile(Const.TestDataFolderPath, Encoding.UTF8));
+            Assert.AreEqual(ProcessResult.FailedToLoadJson(), formatter.LoadFromFile(TestContextHandler.GetOutputFilePath("hoge.json"), Encoding.UTF8));
         }
     }
 }
