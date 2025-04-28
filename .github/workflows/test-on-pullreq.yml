@@ -16,7 +16,7 @@ env:
 
 defaults:
   run:
-    shell: powershell
+    shell: pwsh
 
 jobs:
   build:
