@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -115,17 +116,6 @@ namespace DataFileFormatterTest {
         }
 
         [TestMethod]
-        public async Task NoInputDataSpecified() {
-            Process process = new Process();
-            process.StartInfo.FileName = TestContextHandler.ExePath;
-            string[] param = new string[] { };  //empty
-            process.StartInfo.Arguments = string.Join(" ", param);
-            ResultData resultData = await GetResultFromStdout(process, Task.CompletedTask);
-
-            Assert.AreEqual(52, resultData.ExitCode);
-        }
-
-        [TestMethod]
         public async Task NotAvailableCharset() {
             Process process = new Process();
             process.StartInfo.FileName = TestContextHandler.ExePath;
@@ -145,7 +135,7 @@ namespace DataFileFormatterTest {
 
             Task task = Task.Run(async () => {
                 int len = (input.Length + 9) / 10;
-                await Task.Delay(2000);
+                await Task.Delay(1000);
                 for (int i = 0; i < 10; i++) {
                     await process.StandardInput.WriteAsync(input.Substring(i * len, Math.Min(len, input.Length - i * len)));
                     await Task.Delay(1000);

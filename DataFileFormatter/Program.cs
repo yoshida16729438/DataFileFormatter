@@ -15,13 +15,13 @@ namespace DataFileFormatter {
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        internal static async Task<int> Main(string[] args) {
+        internal static int Main(string[] args) {
 
             CommandLineArgsAnalyzer analyzer = new CommandLineArgsAnalyzer();
             ProcessResult result = analyzer.Analyze(args);
             if (!result.CanContinueProcess()) return EndWithError(result);
 
-            return await ProcessFormat(analyzer._commandLineData);
+            return ProcessFormat(analyzer._commandLineData);
         }
 
         /// <summary>
@@ -29,13 +29,13 @@ namespace DataFileFormatter {
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        private static async Task<int> ProcessFormat(ProcessParameter param) {
+        private static int ProcessFormat(ProcessParameter param) {
 
             IDataFormatter formatter = GetFormatter(param.ProcessType);
 
             ProcessResult result;
 
-            result = await LoadData(formatter, param.FileName, param.Encoding);
+            result = LoadData(formatter, param.FileName, param.Encoding);
             if (!result.CanContinueProcess()) return EndWithError(result);
 
             ProcessFormatMain(formatter, param.FormatStyle, param.IndentChar, param.IndentSpacesCount);
@@ -53,7 +53,7 @@ namespace DataFileFormatter {
         /// <param name="fileName"></param>
         /// <param name="encoding"></param>
         /// <returns></returns>
-        private static async Task<ProcessResult> LoadData(IDataFormatter formatter, string fileName, Encoding encoding) {
+        private static ProcessResult LoadData(IDataFormatter formatter, string fileName, Encoding encoding) {
             if (fileName == string.Empty) {
 
                 if (!Console.IsInputRedirected) return ProcessResult.InputDataNotSpecified();
@@ -61,7 +61,7 @@ namespace DataFileFormatter {
                 if (Console.InputEncoding.CodePage != encoding.CodePage) Console.InputEncoding = encoding;
 
                 ConsoleReader reader = new ConsoleReader(Console.In);
-                (ProcessResult processResult, string data) = await reader.ReadAsync();
+                (ProcessResult processResult, string data) = reader.Read(TimeSpan.FromSeconds(10));
 
                 if (processResult.CanContinueProcess()) return formatter.LoadFromText(data);
                 else return processResult;
