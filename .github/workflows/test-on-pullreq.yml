@@ -27,7 +27,10 @@ jobs:
 
     - name: set branch name when the event was dispatch
       if: github.event_name == 'workflow_dispatch'
-      run: echo "target_branch=$($inputs.branch_name)" | Out-File -FilePath ${Env:GITHUB_ENV} -Encoding utf8 -Append
+      run: |
+        $branch_name = $inputs.branch_name
+        echo "branch_name=${branch_name}"
+        echo "target_branch=${branch_name}" | Out-File -FilePath ${Env:GITHUB_ENV} -Encoding utf8 -Append
 
     - name: debug set env
       run: |
