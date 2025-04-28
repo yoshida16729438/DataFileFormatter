@@ -18,11 +18,11 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: set branch name when the event was pullreq
-      if: github.event_name == "pull_request"
+      if: github.event_name == 'pull_request'
       run: echo "target_branch=${github.ref}" >> "$GITHUB_ENV"
 
     - name: set branch name when the event was dispatch
-      if: github.event_name == "workflow_dispatch"
+      if: github.event_name == 'workflow_dispatch'
       run: echo "target_branch=${inputs.branch_name}" >> "$GITHUB_ENV"
 
     - name: Checkout
