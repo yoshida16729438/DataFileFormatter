@@ -47,7 +47,7 @@ jobs:
 
     # restore NuGet packages
     - name: restore NuGet packages
-      run: msbuild -t:restore -p:RestorePackagesConfig ./${{ env.solution_name }}.sln
+      run: msbuild -t:restore -p:RestorePackagesConfig=true ./${{ env.solution_name }}.sln
 
     # Build the app and test dll
     - name: Build
