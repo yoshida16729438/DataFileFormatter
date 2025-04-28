@@ -35,12 +35,6 @@ jobs:
         echo "branch_name=${branch_name}"
         echo "target_branch=${branch_name}" | Out-File -FilePath ${Env:GITHUB_ENV} -Encoding utf8 -Append
 
-    - name: debug print env
-      run: |
-        ${Env:test_project_name}
-        ${Env:solution_name}
-        ${Env:target_branch}
-
     - name: Checkout
       uses: actions/checkout@v4
       with:
@@ -51,9 +45,13 @@ jobs:
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v2
 
+    # restore NuGet packages
+    - name: restore NuGet packages
+      run: msbuild -t:restore -p:RestorePackagesConfig ./${{ solution_name }}.sln
+
     # Build the app and test dll
     - name: Build
-      run: msbuild -t:build -restore -p:Configuration=Release ./${Env:solution_name}.sln
+      run: msbuild -t:build -restore -p:Configuration=Release ./${{ solution_name }}.sln
 
     # Install the .NET Core workload to use dotnet test
     - name: Install .NET Core
@@ -63,4 +61,4 @@ jobs:
 
     # Execute all unit tests in the solution
     - name: Execute unit tests
-      run: dotnet test ./${Env:test_project_name}/bin/Release/${Env:test_project_name}.dll --logger trx
+      run: dotnet test ./${{ test_project_name }}/bin/Release/${{ test_project_name }}.dll --logger trx
