@@ -47,11 +47,11 @@ jobs:
 
     # restore NuGet packages
     - name: restore NuGet packages
-      run: msbuild -t:restore -p:RestorePackagesConfig ./${{ solution_name }}.sln
+      run: msbuild -t:restore -p:RestorePackagesConfig ./${{ env.solution_name }}.sln
 
     # Build the app and test dll
     - name: Build
-      run: msbuild -t:build -restore -p:Configuration=Release ./${{ solution_name }}.sln
+      run: msbuild -t:build -restore -p:Configuration=Release ./${{ env.solution_name }}.sln
 
     # Install the .NET Core workload to use dotnet test
     - name: Install .NET Core
@@ -61,4 +61,4 @@ jobs:
 
     # Execute all unit tests in the solution
     - name: Execute unit tests
-      run: dotnet test ./${{ test_project_name }}/bin/Release/${{ test_project_name }}.dll --logger trx
+      run: dotnet test ./${{ env.test_project_name }}/bin/Release/${{ env.test_project_name }}.dll --logger trx
