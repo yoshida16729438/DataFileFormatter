@@ -23,27 +23,22 @@ jobs:
     steps:
     - name: set branch name when the event was pullreq
       if: github.event_name == 'pull_request'
-      run: echo "target_branch=$($github.ref)" | Out-File -FilePath ${Env:GITHUB_ENV} -Encoding utf8 -Append
+      run: |
+        $branch_name = $github.ref
+        echo "target_branch=${branch_name}" | Out-File -FilePath ${Env:GITHUB_ENV} -Encoding utf8 -Append
 
     - name: set branch name when the event was dispatch
       if: github.event_name == 'workflow_dispatch'
       run: |
-        $branch_name = $inputs.branch_name
+        $branch_name = $github.event.inputs.branch_name
         echo "branch_name=${branch_name}"
         echo "target_branch=${branch_name}" | Out-File -FilePath ${Env:GITHUB_ENV} -Encoding utf8 -Append
-
-    - name: debug set env
-      run: |
-        echo "test_env=test_env_val" | Out-File -FilePath ${Env:GITHUB_ENV} -Encoding utf8 -Append
-        ${Env:test_env}
-        $($inputs.branch_name)
 
     - name: debug print env
       run: |
         ${Env:test_project_name}
         ${Env:solution_name}
         ${Env:branch_name}
-        ${Env:test_env}
 
     - name: Checkout
       uses: actions/checkout@v4
