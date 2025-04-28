@@ -39,13 +39,13 @@ jobs:
       run: |
         ${Env:test_project_name}
         ${Env:solution_name}
-        ${Env:branch_name}
+        ${Env:target_branch}
 
     - name: Checkout
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-        ref: ${Env:target_branch}
+        ref: ${target_branch}
 
     # Add MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe
