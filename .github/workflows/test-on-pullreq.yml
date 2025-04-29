@@ -60,7 +60,7 @@ jobs:
         $msbuild_path = $(where.exe msbuild -split "'r'n")[0]
         echo "msbuild_path = ${msbuild_path}"
         $vstest_path = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName(${msbuild_path}), "../../../../Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe")
-        echo "vstest_path = ${vstest_path}
+        echo "vstest_path = ${vstest_path}"
         &${vstest_path} /Logger:trx ./${{ env.test_project_name }}/bin/Release/${{ env.test_project_name }}.dll
 
     - name: upload test result
