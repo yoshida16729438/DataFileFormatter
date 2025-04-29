@@ -119,15 +119,12 @@ namespace DataFileFormatterTest {
         public async Task NoInputDataSpecified() {
             Process process = new Process();
             process.StartInfo.FileName = TestContextHandler.ExePath;
-            string[] param = new string[] { };  //empty
+            string[] param = new string[] { "--charset", "EUC-JP" };
             process.StartInfo.Arguments = string.Join(" ", param);
 
-            bool isRedirected = Console.IsInputRedirected;
-            SetConsoleRedirect(false);
             ResultData resultData = await GetResultFromStdout(process, Task.CompletedTask);
 
             Assert.AreEqual(52, resultData.ExitCode);
-            SetConsoleRedirect(isRedirected);
         }
 
         [TestMethod]
@@ -189,13 +186,5 @@ namespace DataFileFormatterTest {
             if (path.Contains(" ") && !path.StartsWith("\"") && !path.EndsWith("\"")) return $"\"{path}\"";
             else return path;
         }
-        private void SetConsoleRedirect(bool isRedirected) {
-            FieldInfo queried = typeof(Console).GetField("_stdInRedirectQueried", BindingFlags.Static | BindingFlags.NonPublic);
-            queried.SetValue(null, isRedirected);
-
-            FieldInfo redirected = typeof(Console).GetField("_isStdInRedirected", BindingFlags.Static | BindingFlags.NonPublic);
-            redirected.SetValue(null, isRedirected);
-        }
-
     }
 }
