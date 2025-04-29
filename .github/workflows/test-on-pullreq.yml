@@ -57,6 +57,7 @@ jobs:
     - name: test
       id: test
       run: |
+        chcp 932
         $msbuild_path = ($(where.exe msbuild) -split "'r'n")[0]
         echo "msbuild_path = ${msbuild_path}"
         $vstest_search_root = [System.IO.Path]::GetDirectoryName(${msbuild_path})
@@ -67,7 +68,7 @@ jobs:
         &${vstest_path} /Logger:trx ./${{ env.test_project_name }}/bin/Release/${{ env.test_project_name }}.dll
 
     - name: upload test result
-      if: steps.test.conclusion == 'failure' || steps.test.conclusion == 'success'
+      if: steps.test.outcome != 'cancelled' && steps.test.outcome != 'skipped'
       uses: actions/upload-artifact@v4
       with:
         name: failed_test_result
