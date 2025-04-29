@@ -68,7 +68,7 @@ jobs:
         &${vstest_path} /Logger:trx ./${{ env.test_project_name }}/bin/Release/${{ env.test_project_name }}.dll
 
     - name: upload test result
-      if: steps.test.outcome != 'cancelled' && steps.test.outcome != 'skipped'
+      if: ${{ steps.test.outcome != 'cancelled' && steps.test.outcome != 'skipped' }}
       uses: actions/upload-artifact@v4
       with:
         name: failed_test_result
