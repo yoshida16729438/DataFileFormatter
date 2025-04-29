@@ -53,12 +53,29 @@ jobs:
     - name: Build
       run: msbuild -t:build -restore -p:Configuration=Release ./${{ env.solution_name }}.sln
 
-    # Install the .NET Core workload to use dotnet test
-    - name: Install .NET Core
-      uses: actions/setup-dotnet@v4
+    # test with vstest.console
+    - name: test
+      id: test
+      run: |
+        $msbuild_path = $(where.exe msbuild -split "'r'n")[0]
+        echo "msbuild_path = ${msbuild_path}"
+        $vstest_path = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName(${msbuild_path}), "../../../../Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe")
+        echo "vstest_path = ${vstest_path}
+        &${vstest_path} /Logger:trx ./${{ env.test_project_name }}/bin/Release/${{ env.test_project_name }}.dll
+
+    - name: upload test result
+      if: steps.test.conclusion == 'failure' || steps.test.conclusion == 'success'
+      uses: actions/upload-artifact@v4
       with:
-        dotnet-version: 8.0.x
+        name: failed_test_result
+        path: ./TestResults/*.trx
+
+    # Install the .NET Core workload to use dotnet test
+    #- name: Install .NET Core
+    #  uses: actions/setup-dotnet@v4
+    #  with:
+    #    dotnet-version: 8.0.x
 
     # Execute all unit tests in the solution
-    - name: Execute unit tests
-      run: dotnet test ./${{ env.test_project_name }}/bin/Release/${{ env.test_project_name }}.dll --logger trx
+    #- name: Execute unit tests
+    #  run: dotnet test ./${{ env.test_project_name }}/bin/Release/${{ env.test_project_name }}.dll --logger trx
