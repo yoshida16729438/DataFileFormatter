@@ -119,7 +119,7 @@ namespace DataFileFormatterTest {
         public async Task NoInputDataSpecified() {
             Process process = new Process();
             process.StartInfo.FileName = TestContextHandler.ExePath;
-            string[] param = new string[] { "--charset", "EUC-JP" };
+            string[] param = new string[] { "--charset", "Shift-jis" };
             process.StartInfo.Arguments = string.Join(" ", param);
 
             ResultData resultData = await GetResultFromStdout(process, Task.CompletedTask);
