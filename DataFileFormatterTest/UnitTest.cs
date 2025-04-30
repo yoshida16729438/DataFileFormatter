@@ -42,6 +42,12 @@ namespace DataFileFormatterTest {
             string actual = File.ReadAllText(output);
             Assert.AreEqual(expected, actual);
         }
+
+        [TestMethod]
+        public async Task NoInputDataSpecified() {
+            Assert.AreEqual(52, await Program.Main(new string[0]));
+        }
+
         private void SetConsoleRedirect(bool isRedirected) {
             FieldInfo queried = typeof(Console).GetField("_stdInRedirectQueried", BindingFlags.Static | BindingFlags.NonPublic);
             queried.SetValue(null, isRedirected);
