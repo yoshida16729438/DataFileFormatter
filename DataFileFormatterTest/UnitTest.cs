@@ -45,6 +45,7 @@ namespace DataFileFormatterTest {
 
         [TestMethod]
         public async Task NoInputDataSpecified() {
+            SetConsoleRedirect(false);
             Assert.AreEqual(52, await Program.Main(new string[0]));
         }
 
