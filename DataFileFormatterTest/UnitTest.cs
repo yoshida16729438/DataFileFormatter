@@ -51,7 +51,7 @@ namespace DataFileFormatterTest {
 
         private void SetConsoleRedirect(bool isRedirected) {
             FieldInfo queried = typeof(Console).GetField("_stdInRedirectQueried", BindingFlags.Static | BindingFlags.NonPublic);
-            queried.SetValue(null, isRedirected);
+            queried.SetValue(null, true);
 
             FieldInfo redirected = typeof(Console).GetField("_isStdInRedirected", BindingFlags.Static | BindingFlags.NonPublic);
             redirected.SetValue(null, isRedirected);
