@@ -87,7 +87,7 @@ jobs:
         ls ./TestResults/
 
     - name: upload test result
-      if: ${{ steps.test.outcome == "success" || steps.test.outcome == "failed" }}
+      if: ${{ steps.test.outcome == 'success' || steps.test.outcome == 'failed' }}
       uses: actions/upload-artifact@v4
       with:
         name: failed_test_result
