@@ -64,7 +64,7 @@ jobs:
       id: test
       run: |
         chcp 932
-        dotnet test ./${{ env.test_project_name }}/bin/Release/${{ env.test_project_name }}.dll --logger trx /p:CollectCoverage=true
+        dotnet test --logger trx /p:CollectCoverage=true
 
     # test with vstest.console
     #- name: test
@@ -87,7 +87,7 @@ jobs:
         ls ./TestResults/
 
     - name: upload test result
-      if: ${{ steps.test.outcome == 'success' || steps.test.outcome == 'failed' }}
+      if: ${{ steps.test.outcome == 'success' || steps.test.outcome == 'failure' }}
       uses: actions/upload-artifact@v4
       with:
         name: failed_test_result
