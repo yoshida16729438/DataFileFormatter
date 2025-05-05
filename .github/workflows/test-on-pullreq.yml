@@ -69,7 +69,6 @@ jobs:
     # test with vstest.console
     - name: test
       id: test
-      continue-on-error: true
       run: |
         chcp 932
         $msbuild_path = ($(where.exe msbuild) -split "'r'n")[0]
