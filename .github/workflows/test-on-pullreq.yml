@@ -64,8 +64,7 @@ jobs:
       id: test
       run: |
         chcp 932
-        #dotnet test ./${{ env.test_project_name }}/bin/Release/${{ env.test_project_name }}.dll --logger trx /Enablecodecoverage
-        dotnet test ./${{ env.test_project_name }}/${{ env.test_project_name }}.csproj --logger trx --collect "Code Coverage"
+        dotnet test ./${{ env.test_project_name }}/bin/Release/${{ env.test_project_name }}.dll --logger trx
 
     # test with vstest.console
     #- name: test
