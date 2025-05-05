@@ -78,7 +78,7 @@ jobs:
         while(![System.IO.File]::Exists([System.IO.Path]::Combine(${vstest_search_root},${vstest_search_name}))){ $vstest_search_root = [System.IO.Path]::Combine(${vstest_search_root},"../") }
         $vstest_path = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine(${vstest_search_root}, ${vstest_search_name}))
         echo "vstest_path = ${vstest_path}"
-        &${vstest_path} /Logger:trx ./${{ env.test_project_name }}/bin/Release/${{ env.test_project_name }}.dll #/Enablecodecoverage
+        &${vstest_path} /Logger:trx ./${{ env.test_project_name }}/bin/Release/${{ env.test_project_name }}.dll /InIsolation #/Enablecodecoverage
 
     - name: get exit code
       if: ${{ always() }}
