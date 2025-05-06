@@ -20,7 +20,7 @@ defaults:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2019
     steps:
     - name: set branch name when the event was pullreq
       if: github.event_name == 'pull_request'
