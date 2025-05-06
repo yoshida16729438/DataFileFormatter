@@ -79,6 +79,7 @@ jobs:
         &${vstest_path} /Logger:html ./${{ env.test_project_name }}/bin/Release/${{ env.test_project_name }}.dll /Enablecodecoverage
         #move coverage result file
         $coverage_path = "./TestResults/$((dir -Recurse -File -Name -Filter *.coverage | Sort-Object)[0])"
+        echo ${coverage_path}
         mv ${coverage_path} ./TestResults/code_coverage.coverage
 
     - name: upload test result
