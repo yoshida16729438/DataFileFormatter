@@ -1,5 +1,6 @@
 ﻿using DataFileFormatter.Process;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -25,28 +26,49 @@ namespace DataFileFormatter.Stdin {
         /// <summary>
         /// read from stream
         /// </summary>
+        /// <param name="timeSpan">wait timeout</param>
         /// <returns></returns>
-        internal async Task<(ProcessResult, string)> ReadAsync() {
-            StringBuilder sb = new StringBuilder();
-            char[] buffer = new char[4096];
-            CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        internal (ProcessResult, string) Read(TimeSpan timeSpan) {
 
-            try {
-                while (!cts.Token.IsCancellationRequested) {
+            Task timeoutTask = Task.Delay(timeSpan);
+            Task<(bool, string)> readTask = ReadAsyncInternal();
 
-                    int readLength = await _textReader.ReadAsync(buffer, 0, buffer.Length);
+            Task completedTask = Task.WhenAny(timeoutTask, readTask).GetAwaiter().GetResult();
+            if (completedTask == readTask) {
 
-                    if (readLength > 0) {
-                        sb.Append(buffer, 0, readLength);
-                    } else {
-                        return (ProcessResult.Normal(), sb.ToString());
-                    }
-                }
-            } catch (OperationCanceledException) {
+                (bool isNormal, string text) = readTask.GetAwaiter().GetResult();
+
+                if (isNormal) return (ProcessResult.Normal(), text);
+                else return (ProcessResult.FailedToLoadFromStdin(), text);
+            } else {
                 return (ProcessResult.FailedToLoadFromStdin(), string.Empty);
             }
 
-            return (ProcessResult.FailedToLoadFromStdin(), string.Empty);
+        }
+
+        /// <summary>
+        /// read from textreader async
+        /// </summary>
+        /// <returns></returns>
+        private async Task<(bool, string)> ReadAsyncInternal() {
+            StringBuilder sb = new StringBuilder();
+            char[] buffer = new char[4096];
+
+            try {
+                while (true) {
+                    int readLength = await _textReader.ReadAsync(buffer, 0, buffer.Length);
+                    if (readLength > 0) {
+                        sb.Append(buffer, 0, readLength);
+                    } else {
+                        break;
+                    }
+                }
+                return (true, sb.ToString());
+
+            } catch (Exception) {
+
+                return (false, string.Empty);
+            }
         }
     }
 }
