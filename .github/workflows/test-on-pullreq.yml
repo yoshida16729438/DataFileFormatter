@@ -20,7 +20,7 @@ defaults:
 
 jobs:
   build:
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
     - name: set branch name when the event was pullreq
       if: github.event_name == 'pull_request'
@@ -46,14 +46,10 @@ jobs:
       uses: microsoft/setup-msbuild@v2
 
     # Install the .NET Core workload to use dotnet test
-    - name: Install .NET Core
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-    - name: clear files
-      run: |
-        dotnet nuget locals all --clear
-        dotnet restore --force --no-cache
+    #- name: Install .NET Core
+    #  uses: actions/setup-dotnet@v4
+    #  with:
+    #    dotnet-version: 8.0.x
 
     # restore NuGet packages
     - name: restore NuGet packages
@@ -70,56 +66,18 @@ jobs:
     #    chcp 932
     #    dotnet test ./${{ env.test_project_name }}/bin/Release/${{ env.test_project_name }}.dll --logger trx /Enablecodecoverage
 
-    - name: set visual studio install folder path to env
-      run: |
-        $msbuild_path = ($(where.exe msbuild) -split "'r'n")[0]
-        $vs_search_root = [System.IO.Path]::GetDirectoryName(${msbuild_path})
-        $vs_search_name = "Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe"
-        while(![System.IO.File]::Exists([System.IO.Path]::Combine(${vs_search_root}, ${vs_search_name}))){ $vs_search_root = [System.IO.Path]::Combine(${vs_search_root}, "../") }
-        $vs_root = [System.IO.Path]::GetFullPath(${vs_search_root})
-        echo "vs_root = ${vs_root}"
-        echo "VS_ROOT=`"${vs_root}`"" | Out-File -FilePath ${Env:GITHUB_ENV} -Encoding utf8 -Append
-
     # test with vstest.console
     - name: test
       id: test
       run: |
         chcp 932
-        $path_to_vstest = "Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe"
-        $vstest_path = [System.IO.Path]::Combine(${{ env.VS_ROOT }}, ${path_to_vstest})
+        $msbuild_path = ($(where.exe msbuild) -split "'r'n")[0]
+        $vs_search_root = [System.IO.Path]::GetDirectoryName(${msbuild_path})
+        $vs_search_name = "Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe"
+        while(![System.IO.File]::Exists([System.IO.Path]::Combine(${vs_search_root}, ${vs_search_name}))){ $vs_search_root = [System.IO.Path]::Combine(${vs_search_root}, "../") }
+        $vs_root = [System.IO.Path]::GetFullPath(${vs_search_root})
+        $vstest_path = [System.IO.Path]::Combine(${vs_root}, ${vs_search_name})
         &${vstest_path} /Logger:html ./${{ env.test_project_name }}/bin/Release/${{ env.test_project_name }}.dll /Enablecodecoverage
-
-    - name: convert coverage file to xml
-      if: ${{ always() && (steps.test.outcome == 'success' || steps.test.outcome == 'failure') }}
-      id: convert_coverage_file
-      run: |
-        $coverage_path = "./$(dir -Recurse -File -Name -Filter *.coverage | Sort-Object | Select-Object -First 1)"
-        cp ${coverage_path} ./TestResults/codecoverage.coverage
-        echo "start to search dll"
-        dir ${{ env.VS_ROOT }} -Recurse -File | Select-Object {$_.FullName} | findstr Microsoft.VisualStudio.Coverage.Analysis.dll
-        echo "end to search dll"
-        $path_to_dll = "Common7\IDE\PrivateAssemblies\Microsoft.VisualStudio.Coverage.Analysis.dll"
-        $dll_path = [System.IO.Path]::Combine(${{ env.VS_ROOT }}, ${path_to_dll})
-        $output_path = "./TestResults/codecoverage.xml"
-        Import-Module -Name ${dll_path}
-        $coverage_info = [Microsoft.VisualStudio.Coverage.Analysis.CoverageInfo]::CreateFromFile(${coverage_path})
-        [System.Data.DataSet] $data = ${coverage_info}.BuildDataSet()
-        ${data}.WriteXml(${output_path})
-        ${data}.Dispose()
-        ${coverage_info}.Dispose()
-
-    - name: generate coverage report
-      if: ${{ steps.convert_coverage_file.outcome == 'success' }}
-      run: |
-        dotnet add package ReportGenerator --version 5.4.6
-        echo "start to search exe"
-        dir "${HOME}\.nuget\packages" -Recurse -File | Select-Object {$_.FullName} | findstr ReportGenerator
-        echo "end to search exe"
-        $exe_path = "${HOME}\.nuget\packages\reportgenerator\5.4.6\tools\net47\ReportGenerator.exe"
-        &${exe_path} `
-        -reports:./TestResults/codecoverage.xml `
-        -targetdir:./TestResults `
-        -reporttypes:HtmlInline
 
     - name: upload test result
       if: ${{ always() && (steps.test.outcome == 'success' || steps.test.outcome == 'failure') }}
