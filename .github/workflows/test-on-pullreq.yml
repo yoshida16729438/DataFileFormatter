@@ -60,28 +60,28 @@ jobs:
     #    dotnet-version: 8.0.x
 
     # Execute all unit tests in the solution
-    - name: Execute unit tests
-      id: test
-      run: |
-        chcp 932
-        dotnet test ./${{ env.test_project_name }}/bin/Release/${{ env.test_project_name }}.dll --logger trx /Enablecodecoverage
-
-    # test with vstest.console
-    #- name: test
+    #- name: Execute unit tests
     #  id: test
     #  run: |
     #    chcp 932
-    #    $msbuild_path = ($(where.exe msbuild) -split "'r'n")[0]
-    #    $vstest_search_root = [System.IO.Path]::GetDirectoryName(${msbuild_path})
-    #    $vstest_search_name = "Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe"
-    #    while(![System.IO.File]::Exists([System.IO.Path]::Combine(${vstest_search_root},${vstest_search_name}))){ $vstest_search_root = [System.IO.Path]::Combine(${vstest_search_root},"../") }
-    #    $vstest_path = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine(${vstest_search_root}, ${vstest_search_name}))
-    #    &${vstest_path} /Logger:trx ./${{ env.test_project_name }}/bin/Release/${{ env.test_project_name }}.dll /InIsolation #/Enablecodecoverage
+    #    dotnet test ./${{ env.test_project_name }}/bin/Release/${{ env.test_project_name }}.dll --logger trx /Enablecodecoverage
+
+    # test with vstest.console
+    - name: test
+      id: test
+      run: |
+        chcp 932
+        $msbuild_path = ($(where.exe msbuild) -split "'r'n")[0]
+        $vstest_search_root = [System.IO.Path]::GetDirectoryName(${msbuild_path})
+        $vstest_search_name = "Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe"
+        while(![System.IO.File]::Exists([System.IO.Path]::Combine(${vstest_search_root},${vstest_search_name}))){ $vstest_search_root = [System.IO.Path]::Combine(${vstest_search_root},"../") }
+        $vstest_path = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine(${vstest_search_root}, ${vstest_search_name}))
+        &${vstest_path} /Logger:trx ./${{ env.test_project_name }}/bin/Release/${{ env.test_project_name }}.dll /Enablecodecoverage /collect:"Code Coverage"
 
     - name: upload test result
       if: ${{ always() && (steps.test.outcome == 'success' || steps.test.outcome == 'failure') }}
       uses: actions/upload-artifact@v4
       with:
-        name: failed_test_result
-        path: ./TestResults/*.trx
+        name: test_result
+        path: ./TestResults/
 
