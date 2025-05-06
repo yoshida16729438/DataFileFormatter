@@ -135,7 +135,7 @@ namespace DataFileFormatterTest {
 
             Task task = Task.Run(async () => {
                 int len = (input.Length + 9) / 10;
-                await Task.Delay(2000);
+                await Task.Delay(1000);
                 for (int i = 0; i < 10; i++) {
                     await process.StandardInput.WriteAsync(input.Substring(i * len, Math.Min(len, input.Length - i * len)));
                     await Task.Delay(1000);

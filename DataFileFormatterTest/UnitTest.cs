@@ -11,32 +11,15 @@ namespace DataFileFormatterTest {
     [TestClass]
     public class UnitTest {
 
+        // input from 
+
         [TestMethod]
-        public async Task WhenValidJsonRequestedFromStdin() {
+        public void WhenValidJsonRequestedFromStdin() {
             string output = TestContextHandler.GetOutputFilePath("formatted.json");
-            string[] props = new string[] { "--json", "--format", "--charset", "shift-jis", "--indentSpacesCount", "4", "--outfile", output };
+            string[] props = new string[] { "--json", "--format", "--charset", "shift-jis", "--indentSpacesCount", "4", "--outfile", output, TestContextHandler.GetTestDataPath("unindented.json") };
 
-            using (MemoryStream ms = new MemoryStream()) {
-                Encoding sjis = Encoding.GetEncoding("shift-jis");
-                foreach (string line in File.ReadAllLines(TestContextHandler.GetTestDataPath("unindented.json"), Encoding.GetEncoding("UTF-8"))) {
-                    byte[] data = sjis.GetBytes(line);
-                    ms.Write(data, 0, data.Length);
-                }
-                ms.Position = 0;
-
-                using (TextReader sr = new StreamReader(ms)) {
-                    Console.SetIn(sr);
-
-                    // to mark as redirected
-                    SetConsoleRedirect(true);
-
-                    int result = await Program.Main(props);
-                    Assert.AreEqual(0, result);
-
-                    //reset redirected
-                    SetConsoleRedirect(false);
-                }
-            }
+            int result = Program.Main(props);
+            Assert.AreEqual(0, result);
 
             string expected = File.ReadAllText(TestContextHandler.GetTestDataPath("indentWithFourSpaces.json"));
             string actual = File.ReadAllText(output);
@@ -44,9 +27,9 @@ namespace DataFileFormatterTest {
         }
 
         [TestMethod]
-        public async Task NoInputDataSpecified() {
+        public void NoInputDataSpecified() {
             SetConsoleRedirect(false);
-            Assert.AreEqual(52, await Program.Main(new string[0]));
+            Assert.AreEqual(52, Program.Main(new string[0]));
         }
 
         private void SetConsoleRedirect(bool isRedirected) {
