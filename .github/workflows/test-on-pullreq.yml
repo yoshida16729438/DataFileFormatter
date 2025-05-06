@@ -82,7 +82,7 @@ jobs:
       run: |
         chcp 932
         $path_to_vstest = "Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe"
-        $vstest_path = [System.IO.Path]::Combine(${{ VS_ROOT }}, ${path_to_vstest})
+        $vstest_path = [System.IO.Path]::Combine(${{ env.VS_ROOT }}, ${path_to_vstest})
         &${vstest_path} /Logger:html ./${{ env.test_project_name }}/bin/Release/${{ env.test_project_name }}.dll /Enablecodecoverage
 
     - name: convert coverage file to xml
@@ -91,7 +91,7 @@ jobs:
         $coverage_path = "./$(dir -Recurse -File -Name -Filter *.coverage | Sort-Object | Select-Object -First 1)"
         cp ${coverage_path} ./TestResults/codecoverage.coverage
         $path_to_dll = "Common7\IDE\PrivateAssemblies\Microsoft.VisualStudio.Coverage.Analysis.dll"
-        $dll_path = [System.IO.Path]::Combine(${{ VS_ROOT }}, ${path_to_dll})
+        $dll_path = [System.IO.Path]::Combine(${{ env.VS_ROOT }}, ${path_to_dll})
         $output_path = "./TestResults/codecoverage.xml"
         Import-Module -Name ${dll_path}
         $coverage_info = [Microsoft.VisualStudio.Coverage.Analysis.CoverageInfo]::CreateFromFile(${coverage_path})
