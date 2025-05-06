@@ -45,6 +45,16 @@ jobs:
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v2
 
+    # Install the .NET Core workload to use dotnet test
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - name: clear files
+      run: |
+        dotnet nuget locals all --clear
+        dotnet restore --force --no-cache
+
     # restore NuGet packages
     - name: restore NuGet packages
       run: msbuild -t:restore -p:RestorePackagesConfig=true ./${{ env.solution_name }}.sln
@@ -52,12 +62,6 @@ jobs:
     # Build the app and test dll
     - name: Build
       run: msbuild -t:build -restore -p:Configuration=Release ./${{ env.solution_name }}.sln
-
-    # Install the .NET Core workload to use dotnet test
-    #- name: Install .NET Core
-    #  uses: actions/setup-dotnet@v4
-    #  with:
-    #    dotnet-version: 8.0.x
 
     # Execute all unit tests in the solution
     #- name: Execute unit tests
