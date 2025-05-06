@@ -91,6 +91,9 @@ jobs:
       run: |
         $coverage_path = "./$(dir -Recurse -File -Name -Filter *.coverage | Sort-Object | Select-Object -First 1)"
         cp ${coverage_path} ./TestResults/codecoverage.coverage
+        echo "start to search dll"
+        dir ${{ env.VS_ROOT }} -Recurse -File | Select-Object {$_.FullName} | findstr Microsoft.VisualStudio.Coverage.Analysis.dll
+        echo "end to search dll"
         $path_to_dll = "Common7\IDE\PrivateAssemblies\Microsoft.VisualStudio.Coverage.Analysis.dll"
         $dll_path = [System.IO.Path]::Combine("${{ env.VS_ROOT }}", ${path_to_dll})
         $output_path = "./TestResults/codecoverage.xml"
@@ -105,7 +108,7 @@ jobs:
       if: ${{ always() && (steps.convert_coverage_file.outcome == 'success' || steps.convert_coverage_file.outcome == 'failure') }}
       run: |
         dotnet add package ReportGenerator --version 5.4.6
-        $exe_path = ${HOME}\.nuget\packages\reportgenerator\5.4.6\tools\net47\ReportGenerator.exe
+        $exe_path = "${HOME}\.nuget\packages\reportgenerator\5.4.6\tools\net47\ReportGenerator.exe"
         &${exe_path} `
         -reports:./TestResults/codecoverage.xml `
         -targetdir:./TestResults `
