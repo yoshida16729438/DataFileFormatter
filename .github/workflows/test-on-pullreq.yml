@@ -78,8 +78,9 @@ jobs:
         $vstest_path = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine(${vstest_search_root}, ${vstest_search_name}))
         &${vstest_path} /Logger:html ./${{ env.test_project_name }}/bin/Release/${{ env.test_project_name }}.dll /Enablecodecoverage
         #move coverage result file
+        dir -Recurse -File -Name -Filter *.coverage | Sort-Object
         $coverage_path = "./TestResults/$((dir -Recurse -File -Name -Filter *.coverage | Sort-Object)[0])"
-        echo ${coverage_path}
+        echo "src=${coverage_path}"
         mv ${coverage_path} ./TestResults/code_coverage.coverage
 
     - name: upload test result
