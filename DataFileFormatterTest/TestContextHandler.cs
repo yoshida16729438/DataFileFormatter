@@ -24,7 +24,7 @@ namespace DataFileFormatterTest {
             string selfDirectory = Path.GetDirectoryName(selfLocation);
             _exePath = Path.Combine(selfDirectory, "DataFileFormatter.exe");
 
-            string testDataDir = Path.GetFullPath(Path.Combine(selfDirectory, @"..\..\testdata"));
+            string testDataDir = Path.GetFullPath(Path.Combine(selfDirectory, @"..\..\..\testdata"));
 
             LoadTestData(testDataDir);
         }
