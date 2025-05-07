@@ -79,6 +79,7 @@ jobs:
         $vstest_path = [System.IO.Path]::Combine(${vs_root}, ${vs_search_name})
         $opencover_path = "${HOME}\.nuget\packages\opencover\4.7.1221\tools\OpenCover.Console.exe"
         $reportgen_path = "${HOME}\.nuget\packages\reportgenerator\5.4.6\tools\net47\ReportGenerator.exe"
+        mkdir ./TestResults
         &${opencover_path} `
         -target:${vstest_path} `
         -targetargs:"./${{ env.test_project_name }}/bin/Release/net48/${{ env.test_project_name }}.dll /Logger:html" `
