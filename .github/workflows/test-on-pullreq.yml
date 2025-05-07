@@ -84,7 +84,8 @@ jobs:
         -target:${vstest_path} `
         -targetargs:"./${{ env.test_project_name }}/bin/Release/net48/${{ env.test_project_name }}.dll /Logger:html" `
         -output:./TestResults/codecoverage.xml `
-        -mergebyhash
+        -mergebyhash `
+        -register:Path64
         &${reportgen_path} `
         -reports:./TestResults/codecoverage.xml `
         -targetdir:./TestResults `
