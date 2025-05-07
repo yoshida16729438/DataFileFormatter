@@ -16,5 +16,7 @@
     <PackageReference Include="MSTest.TestFramework">
       <Version>2.2.10</Version>
     </PackageReference>
+    <PackageReference Include="OpenCover" Version="4.7.1221" />
+    <PackageReference Include="ReportGenerator" Version="5.4.6" />
   </ItemGroup>
 </Project>
