@@ -57,7 +57,7 @@ jobs:
 
     # Build the app and test dll
     - name: Build
-      run: msbuild -t:build -restore -p:Configuration=Release ./${{ env.solution_name }}.sln
+      run: msbuild -t:build -restore -p:Configuration=Debug ./${{ env.solution_name }}.sln
 
     # Execute all unit tests in the solution
     #- name: Execute unit tests
@@ -82,7 +82,7 @@ jobs:
         mkdir ./TestResults
         &${opencover_path} `
         -target:${vstest_path} `
-        -targetargs:"./${{ env.test_project_name }}/bin/Release/net48/${{ env.test_project_name }}.dll /Logger:html" `
+        -targetargs:"./${{ env.test_project_name }}/bin/Debug/net48/${{ env.test_project_name }}.dll /Logger:html" `
         -output:./TestResults/codecoverage.xml `
         -mergebyhash `
         -register:Path64 `
