@@ -14,6 +14,9 @@ env:
   test_project_name: "DataFileFormatterTest"
   solution_name: "DataFileFormatter"
 
+permissions:
+  pull-requests: write
+  
 defaults:
   run:
     shell: pwsh
@@ -70,6 +73,7 @@ jobs:
     - name: test
       id: test
       run: |
+        #get tool paths
         chcp 932
         $msbuild_path = ($(where.exe msbuild) -split "'r'n")[0]
         $vs_search_root = [System.IO.Path]::GetDirectoryName(${msbuild_path})
@@ -79,6 +83,8 @@ jobs:
         $vstest_path = [System.IO.Path]::Combine(${vs_root}, ${vs_search_name})
         $opencover_path = "${HOME}\.nuget\packages\opencover\4.7.1221\tools\OpenCover.Console.exe"
         $reportgen_path = "${HOME}\.nuget\packages\reportgenerator\5.4.6\tools\net47\ReportGenerator.exe"
+
+        #execute test
         mkdir ./TestResults
         &${opencover_path} `
         -target:${vstest_path} `
@@ -87,14 +93,22 @@ jobs:
         -mergebyhash `
         -register:Path64 `
         -filter:"+[DataFileFormatter]*"
+
+        #output report
         &${reportgen_path} `
         -reports:./TestResults/codecoverage.xml `
-        -targetdir:./TestResults `
-        -reporttypes:HtmlInline
+        -targetdir:./TestResults 
 
     - name: upload test result
       if: ${{ always() && (steps.test.outcome == 'success' || steps.test.outcome == 'failure') }}
+      id: upload-results
       uses: actions/upload-artifact@v4
       with:
         name: test_result
         path: ./TestResults/*.*
+
+    - name: log test results to pullreq comment
+      if: ${{ always() && steps.upload-results.outcome == 'success' }}
+      uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        message: "test result path: ${{ steps.upload-results.outputs.artifact-url }}"
