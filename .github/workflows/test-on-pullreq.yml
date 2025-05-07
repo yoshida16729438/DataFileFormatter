@@ -77,7 +77,7 @@ jobs:
         while(![System.IO.File]::Exists([System.IO.Path]::Combine(${vs_search_root}, ${vs_search_name}))){ $vs_search_root = [System.IO.Path]::Combine(${vs_search_root}, "../") }
         $vs_root = [System.IO.Path]::GetFullPath(${vs_search_root})
         $vstest_path = [System.IO.Path]::Combine(${vs_root}, ${vs_search_name})
-        &${vstest_path} /Logger:html ./${{ env.test_project_name }}/bin/Release/${{ env.test_project_name }}.dll /Enablecodecoverage
+        &${vstest_path} /Logger:html ./${{ env.test_project_name }}/bin/Release/net48/${{ env.test_project_name }}.dll /Enablecodecoverage
 
     - name: upload test result
       if: ${{ always() && (steps.test.outcome == 'success' || steps.test.outcome == 'failure') }}
