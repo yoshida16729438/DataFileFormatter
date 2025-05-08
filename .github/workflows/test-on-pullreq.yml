@@ -64,7 +64,7 @@ jobs:
       id: test
       run: |
         chcp 932
-        dotnet test ./${{ env.test_project_name }}/${{ env.test_project_name }}.csproj --logger html --collect "XPlat Code Coverage"
+        dotnet test ./DataFileFormatter.sln --logger html --collect "XPlat Code Coverage"
 
     # test with vstest.console
     #- name: test
