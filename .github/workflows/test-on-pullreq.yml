@@ -60,24 +60,24 @@ jobs:
       run: msbuild -t:build -restore -p:Configuration=Release ./${{ env.solution_name }}.sln
 
     # Execute all unit tests in the solution
-    #- name: Execute unit tests
-    #  id: test
-    #  run: |
-    #    chcp 932
-    #    dotnet test ./${{ env.test_project_name }}/bin/Release/${{ env.test_project_name }}.dll --logger trx /Enablecodecoverage
-
-    # test with vstest.console
-    - name: test
+    - name: Execute unit tests
       id: test
       run: |
         chcp 932
-        $msbuild_path = ($(where.exe msbuild) -split "'r'n")[0]
-        $vs_search_root = [System.IO.Path]::GetDirectoryName(${msbuild_path})
-        $vs_search_name = "Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe"
-        while(![System.IO.File]::Exists([System.IO.Path]::Combine(${vs_search_root}, ${vs_search_name}))){ $vs_search_root = [System.IO.Path]::Combine(${vs_search_root}, "../") }
-        $vs_root = [System.IO.Path]::GetFullPath(${vs_search_root})
-        $vstest_path = [System.IO.Path]::Combine(${vs_root}, ${vs_search_name})
-        &${vstest_path} /Logger:html ./${{ env.test_project_name }}/bin/Release/net48/${{ env.test_project_name }}.dll /Enablecodecoverage
+        dotnet test ./${{ env.test_project_name }}/bin/Release/${{ env.test_project_name }}.dll --logger trx /Enablecodecoverage
+
+    # test with vstest.console
+    #- name: test
+    #  id: test
+    #  run: |
+    #    chcp 932
+    #    $msbuild_path = ($(where.exe msbuild) -split "'r'n")[0]
+    #    $vs_search_root = [System.IO.Path]::GetDirectoryName(${msbuild_path})
+    #    $vs_search_name = "Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe"
+    #    while(![System.IO.File]::Exists([System.IO.Path]::Combine(${vs_search_root}, ${vs_search_name}))){ $vs_search_root = [System.IO.Path]::Combine(${vs_search_root}, "../") }
+    #    $vs_root = [System.IO.Path]::GetFullPath(${vs_search_root})
+    #    $vstest_path = [System.IO.Path]::Combine(${vs_root}, ${vs_search_name})
+    #    &${vstest_path} /Logger:html ./${{ env.test_project_name }}/bin/Release/net48/${{ env.test_project_name }}.dll /Enablecodecoverage
 
     - name: upload test result
       if: ${{ always() && (steps.test.outcome == 'success' || steps.test.outcome == 'failure') }}
