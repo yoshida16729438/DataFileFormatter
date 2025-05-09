@@ -76,7 +76,7 @@ jobs:
       - name: generate coverage report
         if: ${{ always() && steps.test.outcome == 'success' }}
         run: |
-          dotnet add package ReportGenerator --version 5.4.6
+          dotnet tool install ReportGenerator --global --version 5.4.6
           $reportgen_path = "${HOME}\.nuget\packages\reportgenerator\5.4.6\tools\net47\ReportGenerator.exe"
           &${reportgen_path} `
           -reports:./TestResults/**/*.cobertura.xml `
