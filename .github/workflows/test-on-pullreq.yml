@@ -73,7 +73,7 @@ jobs:
           chcp 932
           dotnet test ./${{ env.solution_name }}.sln --logger html --collect "XPlat Code Coverage" --results-directory ./TestResults/ --configuration Debug /p:Include="[${{ env.solution_name }}]*" /p:CoverletOutputFormat=cobertura
           $xml_name = $(dir ./TestResults/ -Recurse -Filter -Name -Filter *.cobertura.xml | findstr xml | select-object -first 1)
-          copy "./TestResults/${xml_name}" "./TestResults/$([System.IO.Path]::GetFileName(${xml_name})"
+          copy "./TestResults/${xml_name}" "./TestResults/$([System.IO.Path]::GetFileName(${xml_name}))"
 
       - name: generate coverage report
         if: ${{ always() && steps.test.outcome == 'success' }}
