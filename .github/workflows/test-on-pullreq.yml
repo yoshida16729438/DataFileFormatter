@@ -72,10 +72,6 @@ jobs:
         run: |
           chcp 932
           dotnet test ./${{ env.solution_name }}.sln --logger html --collect "XPlat Code Coverage" --results-directory ./TestResults/ --configuration Debug /p:Include="[${{ env.solution_name }}]*" /p:CoverletOutputFormat=cobertura
-          $reportgen_path = "${HOME}\.nuget\packages\reportgenerator\5.4.6\tools\net47\ReportGenerator.exe"
-          &${reportgen_path} `
-          -reports:./TestResults/**/*.cobertura.xml `
-          -targetdir:./TestResults
 
       - name: generate coverage report
         if: ${{ always() && steps.test.outcome == 'success' }}
