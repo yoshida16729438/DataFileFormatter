@@ -2,11 +2,11 @@ name: build and execute test on pullreq for .NET Framework console app
 
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
     inputs:
       branch_name:
-        description: 'input target branch to test'
+        description: "input target branch to test"
         required: true
         type: string
 
@@ -22,66 +22,77 @@ jobs:
   build:
     runs-on: windows-2022
     steps:
-    - name: set branch name when the event was pullreq
-      if: github.event_name == 'pull_request'
-      run: |
-        $branch_name = "${{ github.head_ref }}"
-        echo "target_branch=${branch_name}" | Out-File -FilePath ${Env:GITHUB_ENV} -Encoding utf8 -Append
+      - name: set branch name when the event was pullreq
+        if: github.event_name == 'pull_request'
+        run: |
+          $branch_name = "${{ github.head_ref }}"
+          echo "target_branch=${branch_name}" | Out-File -FilePath ${Env:GITHUB_ENV} -Encoding utf8 -Append
 
-    - name: set branch name when the event was dispatch
-      if: github.event_name == 'workflow_dispatch'
-      run: |
-        $branch_name = "${{ github.event.inputs.branch_name }}"
-        echo "branch_name=${branch_name}"
-        echo "target_branch=${branch_name}" | Out-File -FilePath ${Env:GITHUB_ENV} -Encoding utf8 -Append
+      - name: set branch name when the event was dispatch
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          $branch_name = "${{ github.event.inputs.branch_name }}"
+          echo "branch_name=${branch_name}"
+          echo "target_branch=${branch_name}" | Out-File -FilePath ${Env:GITHUB_ENV} -Encoding utf8 -Append
 
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        ref: ${{ env.target_branch }}
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ env.target_branch }}
 
-    # Add MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
-    - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@v2
+      # Add MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
+      #- name: Setup MSBuild.exe
+      #  uses: microsoft/setup-msbuild@v2
 
-    # Install the .NET Core workload to use dotnet test
-    #- name: Install .NET Core
-    #  uses: actions/setup-dotnet@v4
-    #  with:
-    #    dotnet-version: 8.0.x
+      # Install the .NET Core workload to use dotnet test
+      #- name: Install .NET Core
+      #  uses: actions/setup-dotnet@v4
+      #  with:
+      #    dotnet-version: 8.0.x
 
-    # restore NuGet packages
-    - name: restore NuGet packages
-      run: msbuild -t:restore -p:RestorePackagesConfig=true ./${{ env.solution_name }}.sln
+      # restore NuGet packages
+      #- name: restore NuGet packages
+      #  run: msbuild -t:restore -p:RestorePackagesConfig=true ./${{ env.solution_name }}.sln
 
-    # Build the app and test dll
-    - name: Build
-      run: msbuild -t:build -restore -p:Configuration=Release ./${{ env.solution_name }}.sln
+      #- name: restore NuGet packages with dotnet
+      #  run: dotnet restore ./${{ env.solution_name }}.sln
 
-    # Execute all unit tests in the solution
-    - name: Execute unit tests
-      id: test
-      run: |
-        chcp 932
-        dotnet test ./DataFileFormatter.sln --logger html --collect "XPlat Code Coverage"
+      # Build the app and test dll
+      #- name: Build
+      #  run: msbuild -t:build -restore -p:Configuration=Release ./${{ env.solution_name }}.sln
 
-    # test with vstest.console
-    #- name: test
-    #  id: test
-    #  run: |
-    #    chcp 932
-    #    $msbuild_path = ($(where.exe msbuild) -split "'r'n")[0]
-    #    $vs_search_root = [System.IO.Path]::GetDirectoryName(${msbuild_path})
-    #    $vs_search_name = "Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe"
-    #    while(![System.IO.File]::Exists([System.IO.Path]::Combine(${vs_search_root}, ${vs_search_name}))){ $vs_search_root = [System.IO.Path]::Combine(${vs_search_root}, "../") }
-    #    $vs_root = [System.IO.Path]::GetFullPath(${vs_search_root})
-    #    $vstest_path = [System.IO.Path]::Combine(${vs_root}, ${vs_search_name})
-    #    &${vstest_path} /Logger:html ./${{ env.test_project_name }}/bin/Release/net48/${{ env.test_project_name }}.dll /Enablecodecoverage
+      # Build the app with dotnet
+      #- name: Build
+      #  run: dotnet build --configuration Debug ./${{ env.solution_name }}.sln
 
-    - name: upload test result
-      if: ${{ always() && (steps.test.outcome == 'success' || steps.test.outcome == 'failure') }}
-      uses: actions/upload-artifact@v4
-      with:
-        name: test_result
-        path: ./TestResults/*.*
+      # Execute all unit tests in the solution
+      - name: Execute unit tests
+        id: test
+        run: |
+          chcp 932
+          dotnet test ./${{ env.solution_name }}.sln --logger html --collect "XPlat Code Coverage" --results-directory ./TestResults/ --configuration Debug /p:Include="[${{ env.solution_name }}]*" /p:CoverletOutputFormat=cobertura
+          $reportgen_path = "${HOME}\.nuget\packages\reportgenerator\5.4.6\tools\net47\ReportGenerator.exe"
+          &${reportgen_path} `
+          -reports:./TestResults/**/*.cobertura.xml `
+          -targetdir:./TestResults
+
+      # test with vstest.console
+      #- name: test
+      #  id: test
+      #  run: |
+      #    chcp 932
+      #    $msbuild_path = ($(where.exe msbuild) -split "'r'n")[0]
+      #    $vs_search_root = [System.IO.Path]::GetDirectoryName(${msbuild_path})
+      #    $vs_search_name = "Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe"
+      #    while(![System.IO.File]::Exists([System.IO.Path]::Combine(${vs_search_root}, ${vs_search_name}))){ $vs_search_root = [System.IO.Path]::Combine(${vs_search_root}, "../") }
+      #    $vs_root = [System.IO.Path]::GetFullPath(${vs_search_root})
+      #    $vstest_path = [System.IO.Path]::Combine(${vs_root}, ${vs_search_name})
+      #    &${vstest_path} /Logger:html ./${{ env.test_project_name }}/bin/Release/net48/${{ env.test_project_name }}.dll /Enablecodecoverage
+
+      - name: upload test result
+        if: ${{ always() && (steps.test.outcome == 'success' || steps.test.outcome == 'failure') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test_result
+          path: ./TestResults/*.*
