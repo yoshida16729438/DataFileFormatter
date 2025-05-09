@@ -14,13 +14,16 @@ env:
   test_project_name: "DataFileFormatterTest"
   solution_name: "DataFileFormatter"
 
+permissions:
+  pull-requests: write
+
 defaults:
   run:
     shell: pwsh
 
 jobs:
   build:
-    runs-on: windows-2022
+    runs-on: windows-latest
     steps:
       - name: set branch name when the event was pullreq
         if: github.event_name == 'pull_request'
@@ -41,30 +44,18 @@ jobs:
           fetch-depth: 0
           ref: ${{ env.target_branch }}
 
-      # Add MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
-      #- name: Setup MSBuild.exe
-      #  uses: microsoft/setup-msbuild@v2
-
       # Install the .NET Core workload to use dotnet test
-      #- name: Install .NET Core
-      #  uses: actions/setup-dotnet@v4
-      #  with:
-      #    dotnet-version: 8.0.x
+      - name: Install .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
 
-      # restore NuGet packages
-      #- name: restore NuGet packages
-      #  run: msbuild -t:restore -p:RestorePackagesConfig=true ./${{ env.solution_name }}.sln
-
-      #- name: restore NuGet packages with dotnet
-      #  run: dotnet restore ./${{ env.solution_name }}.sln
-
-      # Build the app and test dll
-      #- name: Build
-      #  run: msbuild -t:build -restore -p:Configuration=Release ./${{ env.solution_name }}.sln
-
-      # Build the app with dotnet
-      #- name: Build
-      #  run: dotnet build --configuration Debug ./${{ env.solution_name }}.sln
+      - name: create artifact directory and set name to env
+        run: |
+          $datetime = $(Get-Date -Format "yyyyMMdd_HHmmss")
+          $artifact_directory = "test_result_${datetime}"
+          mkdir "./${artifact_directory}"
+          echo "artifact_directory=${artifact_directory}" | Out-File -FilePath ${Env:GITHUB_ENV} -Encoding utf8 -Append
 
       # Execute all unit tests in the solution
       - name: Execute unit tests
@@ -73,32 +64,27 @@ jobs:
           chcp 932
           dotnet test ./${{ env.solution_name }}.sln --logger html --collect "XPlat Code Coverage" --results-directory ./TestResults/ --configuration Debug /p:Include="[${{ env.solution_name }}]*" /p:CoverletOutputFormat=cobertura
           chcp 65001
+          $html_name = $(dir ./TestResults/ -Name -Filter *.html | findstr html | Select-Object -First 1)
           $xml_name = $(dir ./TestResults/ -Recurse -Name -Filter *.cobertura.xml | findstr xml | select-object -first 1)
-          copy "./TestResults/${xml_name}" "./TestResults/$([System.IO.Path]::GetFileName(${xml_name}))"
+          copy "./TestResults/${html_name}" "./${{ env.artifact_directory }}/${html_name}"
+          copy "./TestResults/${xml_name}" "./${{ env.artifact_directory }}/$([System.IO.Path]::GetFileName(${xml_name}))"
 
       - name: generate coverage report
         if: ${{ always() && steps.test.outcome == 'success' }}
         run: |
           dotnet tool install --global dotnet-reportgenerator-globaltool --version 5.4.6
           $reportgen_path = "${HOME}\.nuget\packages\reportgenerator\5.4.6\tools\net47\ReportGenerator.exe"
-          reportgenerator -reports:./TestResults/*.cobertura.xml -targetdir:./TestResults
-
-      # test with vstest.console
-      #- name: test
-      #  id: test
-      #  run: |
-      #    chcp 932
-      #    $msbuild_path = ($(where.exe msbuild) -split "'r'n")[0]
-      #    $vs_search_root = [System.IO.Path]::GetDirectoryName(${msbuild_path})
-      #    $vs_search_name = "Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe"
-      #    while(![System.IO.File]::Exists([System.IO.Path]::Combine(${vs_search_root}, ${vs_search_name}))){ $vs_search_root = [System.IO.Path]::Combine(${vs_search_root}, "../") }
-      #    $vs_root = [System.IO.Path]::GetFullPath(${vs_search_root})
-      #    $vstest_path = [System.IO.Path]::Combine(${vs_root}, ${vs_search_name})
-      #    &${vstest_path} /Logger:html ./${{ env.test_project_name }}/bin/Release/net48/${{ env.test_project_name }}.dll /Enablecodecoverage
+          reportgenerator -reports:./${{ env.artifact_directory }}/*.cobertura.xml -targetdir:"./${{ env.artifact_directory }}/coverage-report/"
 
       - name: upload test result
         if: ${{ always() && (steps.test.outcome == 'success' || steps.test.outcome == 'failure') }}
         uses: actions/upload-artifact@v4
         with:
-          name: test_result
-          path: ./TestResults/*.*
+          name: ${{ env.artifact_directory }}
+          path: ./${{ env.artifact_directory }}/
+          
+      - name: log test results to pullreq comment
+        if: ${{ always() && github.event_name == 'pull_request' && steps.upload-results.outcome == 'success' }}
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          message: "test result path: ${{ steps.upload-results.outputs.artifact-url }}"
