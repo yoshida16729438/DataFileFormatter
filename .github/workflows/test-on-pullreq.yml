@@ -78,6 +78,7 @@ jobs:
 
       - name: upload test result
         if: ${{ always() && (steps.test.outcome == 'success' || steps.test.outcome == 'failure') }}
+        id: upload-results
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.artifact_directory }}
