@@ -33,14 +33,14 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           $branch_name = "${{ github.head_ref }}"
-          echo "target_branch=${branch_name}" | Out-File -FilePath ${Env.GITHUB_ENV} -Encoding utf8 -Append
+          echo "target_branch=${branch_name}" | Out-File -FilePath ${Env:GITHUB_ENV} -Encoding utf8 -Append
 
       - name: set branch name when the event was dispatch
         if: github.event_name == 'workflow_dispatch'
         run: |
           $branch_name = "${{ github.event.inputs.branch_name }}"
           echo "branch_name=${branch_name}"
-          echo "target_branch=${branch_name}" | Out-File -FilePath ${Env.GITHUB_ENV} -Encoding utf8 -Append
+          echo "target_branch=${branch_name}" | Out-File -FilePath ${Env:GITHUB_ENV} -Encoding utf8 -Append
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -60,7 +60,7 @@ jobs:
           $datetime = $(Get-Date -Format "yyyyMMdd_HHmmss")
           $artifact_name = "test_result_${datetime}"
           mkdir "./${artifact_name}"
-          echo "artifact_name=${artifact_name}" | Out-File -FilePath ${Env.GITHUB_OUTPUT} -Encoding utf8 -Append
+          echo "artifact_name=${artifact_name}" | Out-File -FilePath ${Env:GITHUB_OUTPUT} -Encoding utf8 -Append
 
       # Execute all unit tests in the solution
       - name: Execute unit tests
