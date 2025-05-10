@@ -115,7 +115,6 @@ jobs:
       - name: echo downloaded directory
         run: |
           ls ${{ steps.download_report.outputs.download-path }}
-          cp ${{ steps.download_report.outputs.download-path }}/${{ env.coverage_file }} ./${{ env.coverage_file }}
 
       - name: Code Coverage Summary
         uses: irongut/CodeCoverageSummary@v1.3.0
