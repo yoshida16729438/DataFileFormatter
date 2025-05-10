@@ -103,8 +103,8 @@ jobs:
     steps:
       - name: echo previous result
         run: |
-          echo ${{ needs.build_and_test.output.artifact_name }}
-          echo ${{ needs.build_and_test.output.artifact_url }}
+          echo ${{ needs.build_and_test.outputs.artifact_name }}
+          echo ${{ needs.build_and_test.outputs.artifact_url }}
 
       - name: download coverage report
         id: download_report
@@ -113,12 +113,14 @@ jobs:
           name: ${{ needs.build_and_test.outputs.artifact_name }}
 
       - name: echo downloaded directory
-        run: ls ${{ steps.download_report.outputs.download-path }}
+        run: |
+          ls ${{ steps.download_report.outputs.download-path }}
+          cp ${{ steps.download_report.outputs.download-path }}/${{ env.coverage_file }} ./${{ env.coverage_file }}
 
       - name: Code Coverage Summary
         uses: irongut/CodeCoverageSummary@v1.3.0
         with:
-          filename: "${{ steps.download_report.outputs.download-path }}/${{ env.coverage_file }}"
+          filename: ./${{ env.coverage_file }}
           badge: true
           format: markdown
           output: both
