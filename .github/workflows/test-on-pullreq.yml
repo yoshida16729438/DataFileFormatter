@@ -124,7 +124,7 @@ jobs:
           output: both
 
       - name: append artifact url to file
-        run: echo '\ntest result path: ${{ steps.upload-results.outputs.artifact-url }}'' >> ./code-coverage-results.md
+        run: echo '\ntest result path: ${{ needs.build_and_test.outputs.artifact_url }}'' >> ./code-coverage-results.md
 
       - name: log test results to job summary
         run: cat ./code-coverage-results.md >> ${GITHUB_STEP_SUMMARY}
