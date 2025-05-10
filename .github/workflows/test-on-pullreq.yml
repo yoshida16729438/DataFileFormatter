@@ -22,12 +22,16 @@ permissions:
 jobs:
   build_and_test:
     runs-on: windows-latest
+
     defaults:
       run:
         shell: pwsh
+
     outputs:
       artifact_name: ${{ steps.define_artifact_name.outputs.artifact_name }}
-      artifact_url: ${{ steps.upload_results.outputs.artifact_url }}
+      artifact_url: ${{ steps.upload_results.outputs.artifact-url }}
+      test_executed: ${{ steps.test.outputs.test_executed }}
+
     steps:
       - name: set branch name when the event was pullreq
         if: github.event_name == 'pull_request'
@@ -76,6 +80,8 @@ jobs:
           /p:CoverletOutputFormat=cobertura
 
           chcp 65001
+          echo "test_executed=true" | Out-File -FilePath ${Env:GITHUB_OUTPUT} -Encoding utf8 -Append
+
           $html_name = $(dir "./${{ env.result_folder }}/" -Name -Filter *.html | findstr html | Select-Object -First 1)
           $xml_name = $(dir "./${{ env.result_folder }}/" -Recurse -Name -Filter "${{ env.coverage_file }}" | findstr "${{ env.coverage_file }}" | select-object -first 1)
           copy "./${{ env.result_folder }}/${html_name}" "./${{ steps.define_artifact_name.outputs.artifact_name }}/${html_name}"
@@ -112,10 +118,6 @@ jobs:
         with:
           name: ${{ needs.build_and_test.outputs.artifact_name }}
 
-      - name: echo downloaded directory
-        run: |
-          ls ${{ steps.download_report.outputs.download-path }} -al
-
       - name: Code Coverage Summary
         uses: irongut/CodeCoverageSummary@v1.3.0
         with:
@@ -124,17 +126,35 @@ jobs:
           format: markdown
           output: both
 
-      - name: append artifact url to file
+      # create result file with default result (failed to build), overwritten if test was executed
+      - name: create result file
+        if: ${{ always() }}
         run: |
-          chmod u+w ./code-coverage-results.md
-          ls -al
-          echo '\ntest result path: ${{ needs.build_and_test.outputs.artifact_url }}' >> ./code-coverage-results.md
+          echo 'Build failed' > ./result.md
+
+      # overwrite result file with default test result (failed), overwritten if test was succeeded
+      - name: write test result
+        if: ${{ always() && needs.build_and_test.outputs.test_executed }}
+        run: |
+          echo 'Test failed' > ./result.md
+
+      # overwrite result file with coverage result if test was succeeded
+      - name: write coverage result to result file
+        run: |
+          cat ./code-coverage-results.md > ./result.md
+
+      - name: append artifact url to file
+        if: ${{ always() && needs.build_and_test.outputs.test_executed }}
+        run: |
+          echo '\ntest result path: ${{ needs.build_and_test.outputs.artifact_url }}' >> ./result.md
 
       - name: log test results to job summary
-        run: cat ./code-coverage-results.md >> ${GITHUB_STEP_SUMMARY}
+        if: ${{ always() }}
+        run: cat ./result.md >> ${GITHUB_STEP_SUMMARY}
 
       - name: log test results to pullreq comment
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ always() && github.event_name == 'pull_request' }}
         uses: marocchino/sticky-pull-request-comment@v2
         with:
-          path: ./code-coverage-results.md
+          path: ./result.md
+          hide_and_recreate: true
