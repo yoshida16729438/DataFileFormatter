@@ -146,7 +146,7 @@ jobs:
       - name: append artifact url to file
         if: ${{ always() && needs.build_and_test.outputs.test_executed }}
         run: |
-          echo '\ntest result path: ${{ needs.build_and_test.outputs.artifact_url }}' >> ./result.md
+          echo '\n\ntest result path: ${{ needs.build_and_test.outputs.artifact_url }}' >> ./result.md
 
       - name: log test results to job summary
         if: ${{ always() }}
