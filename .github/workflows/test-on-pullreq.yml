@@ -26,7 +26,7 @@ jobs:
       run:
         shell: pwsh
     outputs:
-      artifact_name: ${{ steps.define_artifact_name.artifact_name }}
+      artifact_name: ${{ steps.define_artifact_name.outputs.artifact_name }}
       artifact_url: ${{ steps.upload-results.outputs.artifact_url }}
     steps:
       - name: set branch name when the event was pullreq
@@ -78,24 +78,24 @@ jobs:
           chcp 65001
           $html_name = $(dir "./${{ env.result_folder }}/" -Name -Filter *.html | findstr html | Select-Object -First 1)
           $xml_name = $(dir "./${{ env.result_folder }}/" -Recurse -Name -Filter "${{ env.coverage_file }}" | findstr "${{ env.coverage_file }}" | select-object -first 1)
-          copy "./${{ env.result_folder }}/${html_name}" "./${{ steps.define_artifact_name.artifact_name }}/${html_name}"
-          copy "./${{ env.result_folder }}/${xml_name}" "./${{ steps.define_artifact_name.artifact_name }}/${{ env.coverage_file }}"
+          copy "./${{ env.result_folder }}/${html_name}" "./${{ steps.define_artifact_name.outputs.artifact_name }}/${html_name}"
+          copy "./${{ env.result_folder }}/${xml_name}" "./${{ steps.define_artifact_name.outputs.artifact_name }}/${{ env.coverage_file }}"
 
       - name: generate coverage report
         if: ${{ always() && steps.test.outcome == 'success' }}
         run: |
           dotnet tool install --global dotnet-reportgenerator-globaltool --version 5.4.6
           reportgenerator `
-          -reports:./${{ steps.define_artifact_name.artifact_name }}/${{ env.coverage_file }} `
-          -targetdir:"./${{ steps.define_artifact_name.artifact_name }}/coverage-report/"
+          -reports:./${{ steps.define_artifact_name.outputs.artifact_name }}/${{ env.coverage_file }} `
+          -targetdir:"./${{ steps.define_artifact_name.outputs.artifact_name }}/coverage-report/"
 
       - name: upload test result
         if: ${{ always() && (steps.test.outcome == 'success' || steps.test.outcome == 'failure') }}
         id: upload_results
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.define_artifact_name.artifact_name }}
-          path: ./${{ steps.define_artifact_name.artifact_name }}/
+          name: ${{ steps.define_artifact_name.outputs.artifact_name }}
+          path: ./${{ steps.define_artifact_name.outputs.artifact_name }}/
 
   create-coverage-summary:
     needs: build_and_test
