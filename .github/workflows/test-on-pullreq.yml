@@ -13,30 +13,34 @@ on:
 env:
   test_project_name: "DataFileFormatterTest"
   solution_name: "DataFileFormatter"
+  result_folder: "TestResults"
+  coverage_file: "coverage.cobertura.xml"
 
 permissions:
   pull-requests: write
 
-defaults:
-  run:
-    shell: pwsh
-
 jobs:
-  build:
+  build_and_test:
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    outputs:
+      artifact_name: ${{ steps.define_artifact_name.artifact_name }}
+      artifact_url: ${{ steps.upload-results.outputs.artifact_url }}
     steps:
       - name: set branch name when the event was pullreq
         if: github.event_name == 'pull_request'
         run: |
           $branch_name = "${{ github.head_ref }}"
-          echo "target_branch=${branch_name}" | Out-File -FilePath ${Env:GITHUB_ENV} -Encoding utf8 -Append
+          echo "target_branch=${branch_name}" | Out-File -FilePath ${{ env.GITHUB_ENV }} -Encoding utf8 -Append
 
       - name: set branch name when the event was dispatch
         if: github.event_name == 'workflow_dispatch'
         run: |
           $branch_name = "${{ github.event.inputs.branch_name }}"
           echo "branch_name=${branch_name}"
-          echo "target_branch=${branch_name}" | Out-File -FilePath ${Env:GITHUB_ENV} -Encoding utf8 -Append
+          echo "target_branch=${branch_name}" | Out-File -FilePath ${{ env.GITHUB_ENV }} -Encoding utf8 -Append
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -50,42 +54,83 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: create artifact directory and set name to env
+      - name: create artifact directory and set name to output
+        id: define_artifact_name
         run: |
           $datetime = $(Get-Date -Format "yyyyMMdd_HHmmss")
-          $artifact_directory = "test_result_${datetime}"
-          mkdir "./${artifact_directory}"
-          echo "artifact_directory=${artifact_directory}" | Out-File -FilePath ${Env:GITHUB_ENV} -Encoding utf8 -Append
+          $artifact_name = "test_result_${datetime}"
+          mkdir "./${artifact_name}"
+          echo "artifact_name=${artifact_name}" | Out-File -FilePath ${{ env.GITHUB_OUTPUT }} -Encoding utf8 -Append
 
       # Execute all unit tests in the solution
       - name: Execute unit tests
         id: test
         run: |
           chcp 932
-          dotnet test ./${{ env.solution_name }}.sln --logger html --collect "XPlat Code Coverage" --results-directory ./TestResults/ --configuration Debug /p:Include="[${{ env.solution_name }}]*" /p:CoverletOutputFormat=cobertura
+          dotnet test ./${{ env.solution_name }}.sln `
+          --logger html `
+          --collect "XPlat Code Coverage" `
+          --results-directory "./${{ env.result_folder }}/" `
+          --configuration Debug `
+          /p:Include="[${{ env.solution_name }}]*" `
+          /p:CoverletOutputFormat=cobertura
+
           chcp 65001
-          $html_name = $(dir ./TestResults/ -Name -Filter *.html | findstr html | Select-Object -First 1)
-          $xml_name = $(dir ./TestResults/ -Recurse -Name -Filter *.cobertura.xml | findstr xml | select-object -first 1)
-          copy "./TestResults/${html_name}" "./${{ env.artifact_directory }}/${html_name}"
-          copy "./TestResults/${xml_name}" "./${{ env.artifact_directory }}/$([System.IO.Path]::GetFileName(${xml_name}))"
+          $html_name = $(dir "./${{ env.result_folder }}/" -Name -Filter *.html | findstr html | Select-Object -First 1)
+          $xml_name = $(dir "./${{ env.result_folder }}/" -Recurse -Name -Filter "${{ env.coverage_file }}" | findstr "${{ env.coverage_file }}" | select-object -first 1)
+          copy "./${{ env.result_folder }}/${html_name}" "./${{ steps.define_artifact_name.artifact_name }}/${html_name}"
+          copy "./${{ env.result_folder }}/${xml_name}" "./${{ steps.define_artifact_name.artifact_name }}/${{ env.coverage_file }}"
 
       - name: generate coverage report
         if: ${{ always() && steps.test.outcome == 'success' }}
         run: |
           dotnet tool install --global dotnet-reportgenerator-globaltool --version 5.4.6
-          $reportgen_path = "${HOME}\.nuget\packages\reportgenerator\5.4.6\tools\net47\ReportGenerator.exe"
-          reportgenerator -reports:./${{ env.artifact_directory }}/*.cobertura.xml -targetdir:"./${{ env.artifact_directory }}/coverage-report/"
+          reportgenerator `
+          -reports:./${{ steps.define_artifact_name.artifact_name }}/${{ env.coverage_file }} `
+          -targetdir:"./${{ steps.define_artifact_name.artifact_name }}/coverage-report/"
 
       - name: upload test result
         if: ${{ always() && (steps.test.outcome == 'success' || steps.test.outcome == 'failure') }}
-        id: upload-results
+        id: upload_results
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.artifact_directory }}
-          path: ./${{ env.artifact_directory }}/
-          
+          name: ${{ steps.define_artifact_name.artifact_name }}
+          path: ./${{ steps.define_artifact_name.artifact_name }}/
+
+  create-coverage-summary:
+    needs: build_and_test
+    runs-on: ubuntu-latest
+    steps:
+      - name: echo previous result
+        run: |
+          echo ${{ needs.build_and_test.output.artifact_name }}
+          echo ${{ needs.build_and_test.output.artifact_url }}
+
+      - name: download coverage report
+        id: download_report
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build_and_test.output.artifact_name }}
+
+      - name: echo downloaded directory
+        run: ls ${{ steps.download_report.outputs.download-path }}
+
+      - name: Code Coverage Summary
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: "${{ steps.download_report.outputs.download-path }}/${{ env.coverage_file }}"
+          badge: true
+          format: markdown
+          output: both
+
+      - name: append artifact url to file
+        run: echo "\ntest result path: ${{ steps.upload-results.outputs.artifact-url }}" >> ./code-coverage-results.md
+
+      - name: log test results to job summary
+        run: cat ./code-coverage-results.md >> ${GITHUB_STEP_SUMMARY}
+
       - name: log test results to pullreq comment
-        if: ${{ always() && github.event_name == 'pull_request' && steps.upload-results.outcome == 'success' }}
+        if: ${{ github.event_name == 'pull_request' }}
         uses: marocchino/sticky-pull-request-comment@v2
         with:
-          message: "test result path: ${{ steps.upload-results.outputs.artifact-url }}"
+          path: ./code-coverage-results.md
