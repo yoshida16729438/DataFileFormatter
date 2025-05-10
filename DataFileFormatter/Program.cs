@@ -4,7 +4,6 @@ using DataFileFormatter.Process;
 using DataFileFormatter.Stdin;
 using System;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace DataFileFormatter {
 
@@ -119,10 +118,9 @@ namespace DataFileFormatter {
         /// <returns></returns>
         private static IDataFormatter GetFormatter(ProcessType processType) {
             switch (processType) {
-                case ProcessType.json:
+                default:
                     return new JsonFormatter();
             }
-            return null;
         }
 
         /// <summary>
