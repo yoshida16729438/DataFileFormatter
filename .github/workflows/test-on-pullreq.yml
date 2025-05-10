@@ -27,7 +27,7 @@ jobs:
         shell: pwsh
     outputs:
       artifact_name: ${{ steps.define_artifact_name.outputs.artifact_name }}
-      artifact_url: ${{ steps.upload-results.outputs.artifact_url }}
+      artifact_url: ${{ steps.upload_results.outputs.artifact_url }}
     steps:
       - name: set branch name when the event was pullreq
         if: github.event_name == 'pull_request'
@@ -114,7 +114,7 @@ jobs:
 
       - name: echo downloaded directory
         run: |
-          ls ${{ steps.download_report.outputs.download-path }}
+          ls ${{ steps.download_report.outputs.download-path }} -al
 
       - name: Code Coverage Summary
         uses: irongut/CodeCoverageSummary@v1.3.0
@@ -126,6 +126,8 @@ jobs:
 
       - name: append artifact url to file
         run: |
+          chmod u+w ./code-coverage-results.md
+          ls -al
           echo '\ntest result path: ${{ needs.build_and_test.outputs.artifact_url }}' >> ./code-coverage-results.md
 
       - name: log test results to job summary
