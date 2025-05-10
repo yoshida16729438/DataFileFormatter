@@ -7,7 +7,7 @@ using System.Reflection;
 namespace DataFileFormatterTest {
 
     [TestClass]
-    public class TestContextHandler {
+    public static class TestContextHandler {
 
         private static string _outputDir;
         private static string _exePath;
