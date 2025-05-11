@@ -27,6 +27,7 @@ namespace DataFileFormatterTest.Stdin {
             }
         }
 
+        [TestMethod]
         public void ThrowExceptionTest() {
             using (TextReader reader = new MockReader("test value")) {
                 ConsoleReader consoleReader = new ConsoleReader(reader);
