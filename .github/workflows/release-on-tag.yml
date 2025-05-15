@@ -86,15 +86,15 @@ jobs:
       - name: test
         run: |
           chcp 932
-          dotnet test ./src/${{ env.solution_name }}/${{ env.solution_name }}.sln
+          dotnet test ./src/${{ env.solution_name }}.sln
 
       - name: build
         run: |
-          dotnet build ./src/${{ env.solution_name }}/${{ env.solution_name }}.sln --configuration Release
+          dotnet build ./src/${{ env.solution_name }}.sln --configuration Release
 
       - name: zip the artifact
         run: |
-          Compress-Archive -Path ./src/${{ env.solution_name }}/${{ env.solution_name }}/bin/Release/net48 -DestinationPath ./executable.zip
+          Compress-Archive -Path ./src/${{ env.solution_name }}/bin/Release/net48 -DestinationPath ./executable.zip
 
       - name: release
         uses: softprops/action-gh-release@v2
