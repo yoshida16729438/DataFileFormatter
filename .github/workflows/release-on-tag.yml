@@ -1,0 +1,107 @@
+name: create release when a tag was created
+
+on:
+  create:
+  # can't set filter
+
+  push:
+    tags:
+      - v*
+
+  workflow_dispatch:
+    inputs:
+      tagName:
+        description: "input tag name to create release"
+        required: true
+        type: string
+      tagBranch:
+        description: "branch name of which tag was created"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+env:
+  solution_name: "DataFileFormatter"
+
+jobs:
+  detect-branch:
+    runs-on: ubuntu-latest
+
+    outputs:
+      tag_name: ${{ steps.set_tag.outputs.tag_name }}
+
+    steps:
+      - name: debug output
+        run: |
+          echo "github.event_name: ${{ github.event_name }}"
+          echo "github.ref: ${{ github.ref }}"
+          echo "github.ref_name: ${{ github.ref_name }}"
+          echo "github.ref_type: ${{ github.ref_type }}"
+          echo "github.event.ref_type: ${{ github.event.ref_type }}"
+
+      - name: set tag ref when the event was create was or push
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        run: |
+          echo "tag_name=${{ github.ref_name }}" >> ${GITHUB_ENV}
+
+      - name: set tag ref when the event was dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          echo "tag_name=${{ github.event.inputs.tagName }}" >> ${GITHUB_ENV}
+
+      - name: aggregate tag ref to output
+        if: ${{ env.tag_name }}
+        id: set_tag
+        run: |
+          echo "tag_name=${{ env.tag_name }}" >> ${GITHUB_OUTPUT}
+
+  build-and-release:
+    runs-on: windows-latest
+    needs: detect-branch
+    if: ${{ needs.detect-branch.outputs.tag_name }}
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: checkout tag
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.detect-branch.outputs.tag_name }}
+          path: src
+
+      - name: zip the repository
+        run: |
+          ls -Recurse -Directory -Name
+          Compress-Archive -Path ./src -DestinationPath ./source.zip
+
+      - name: Install .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: test
+        run: |
+          chcp 932
+          dotnet test ./src/${{ env.solution_name }}.sln
+
+      - name: build
+        run: |
+          dotnet build ./src/${{ env.solution_name }}.sln --configuration Release
+
+      - name: zip the artifact
+        run: |
+          Compress-Archive -Path ./src/${{ env.solution_name }}/bin/Release/net48 -DestinationPath ./executable.zip
+
+      - name: release
+        uses: softprops/action-gh-release@v2
+        with:
+          prerelease: true
+          files: |
+            ./source.zip
+            ./executable.zip
+          tag_name: ${{ needs.detect-branch.outputs.tag_name }}
+          generate_release_notes: true
