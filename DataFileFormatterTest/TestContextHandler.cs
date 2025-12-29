@@ -26,14 +26,18 @@ namespace DataFileFormatterTest {
 
             string testDataDir = Path.GetFullPath(Path.Combine(selfDirectory, @"..\..\..\testdata"));
 
-            LoadTestData(testDataDir);
+            LoadTestDirectory(testDataDir);
         }
 
-        private static void LoadTestData(string folderPath) {
+        private static void LoadTestDirectory(string folderPath) {
             _testDataPath = new Dictionary<string, string>();
             foreach (string path in Directory.EnumerateFiles(folderPath, "*", SearchOption.AllDirectories)) {
                 _testDataPath.Add(Path.GetFileName(path), path);
             }
+        }
+
+        internal static string LoadTestDataFileContent(string filename) {
+            using (StreamReader streamReader = new StreamReader(GetTestDataPath(filename))) return streamReader.ReadToEnd();
         }
 
         internal static string GetTestDataPath(string filename) {

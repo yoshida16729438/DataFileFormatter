@@ -14,7 +14,7 @@ namespace DataFileFormatter.Formatter {
     /// </summary>
     internal class JsonFormatter : IDataFormatter {
 
-        public JsonFormatter() { }
+        internal JsonFormatter() { }
 
         private JsonNode _jsonNode;
 

@@ -118,6 +118,8 @@ namespace DataFileFormatter {
         /// <returns></returns>
         private static IDataFormatter GetFormatter(ProcessType processType) {
             switch (processType) {
+                case ProcessType.xml:
+                    return new XmlFormatter();
                 default:
                     return new JsonFormatter();
             }

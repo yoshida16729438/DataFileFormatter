@@ -17,15 +17,11 @@ namespace DataFileFormatterTest.Formatter {
 
         [ClassInitialize]
         public static void LoadTestContext(TestContext _) {
-            _unindented = LoadFromFile("unindented.json");
-            _indentWithFourSpaces = LoadFromFile("indentWithFourSpaces.json");
-            _indentWithTab = LoadFromFile("indentWithTab.json");
-            _escapedJsonInput = LoadFromFile("escapedJsonInput.json");
-            _escapedJsonOutput = LoadFromFile("escapedJsonOutput.json");
-        }
-
-        private static string LoadFromFile(string fileName) {
-            using (StreamReader streamReader = new StreamReader(TestContextHandler.GetTestDataPath(fileName))) return streamReader.ReadToEnd();
+            _unindented = TestContextHandler.LoadTestDataFileContent("unindented.json");
+            _indentWithFourSpaces = TestContextHandler.LoadTestDataFileContent("indentWithFourSpaces.json");
+            _indentWithTab = TestContextHandler.LoadTestDataFileContent("indentWithTab.json");
+            _escapedJsonInput = TestContextHandler.LoadTestDataFileContent("escapedJsonInput.json");
+            _escapedJsonOutput = TestContextHandler.LoadTestDataFileContent("escapedJsonOutput.json");
         }
 
         [TestMethod]
