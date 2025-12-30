@@ -14,10 +14,19 @@ namespace DataFileFormatter.Formatter {
     /// </summary>
     internal class JsonFormatter : IDataFormatter {
 
+        /// <summary>
+        /// constructor
+        /// </summary>
         internal JsonFormatter() { }
 
+        /// <summary>
+        /// loaded json object
+        /// </summary>
         private JsonNode _jsonNode;
 
+        /// <summary>
+        /// formatted/unformatted json string
+        /// </summary>
         private string _processedJson;
 
         /// <inheritdoc/>

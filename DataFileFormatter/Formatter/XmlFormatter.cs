@@ -140,7 +140,7 @@ namespace DataFileFormatter.Formatter {
             /// <summary>
             /// text encoding to use with string builder
             /// </summary>
-            private Encoding _encoding;
+            private readonly Encoding _encoding;
 
             /// <summary>
             /// Initializes a new instance of the EncodingStringWriter class using the specified StringBuilder and

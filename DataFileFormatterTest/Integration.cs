@@ -14,7 +14,7 @@ namespace DataFileFormatterTest {
     public class Integration {
 
         [TestMethod]
-        public async Task FormatJson1() {
+        public async Task FormatJson() {
             Process process = new Process();
             process.StartInfo.FileName = TestContextHandler.ExePath;
             process.StartInfo.RedirectStandardInput = true;
