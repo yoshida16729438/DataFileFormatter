@@ -34,17 +34,17 @@ namespace DataFileFormatterTest {
         }
 
         [TestMethod]
-        public async Task FormatJson2() {
+        public async Task FormatXml() {
             Process process = new Process();
             process.StartInfo.FileName = TestContextHandler.ExePath;
-            string infile = TestContextHandler.GetTestDataPath("indentWithFourSpaces.json");
-            string outfile = TestContextHandler.GetOutputFilePath("testIndentWithTab.json");
-            string[] param = new string[] { "--json", "--format", "--tab", QuoteIfRequred(infile), "--outfile", QuoteIfRequred(outfile) };
+            string infile = TestContextHandler.GetTestDataPath("indentWithFourSpaces.xml");
+            string outfile = TestContextHandler.GetOutputFilePath("testIndentWithTab.xml");
+            string[] param = new string[] { "--xml", "--format", "--tab", QuoteIfRequred(infile), "--outfile", QuoteIfRequred(outfile) };
             process.StartInfo.Arguments = string.Join(" ", param);
 
             ResultData resultData = await GetResultFromStdout(process, Task.CompletedTask);
 
-            string expected = File.ReadAllText(TestContextHandler.GetTestDataPath("indentWithTab.json"));
+            string expected = File.ReadAllText(TestContextHandler.GetTestDataPath("indentWithTab.xml"));
             Assert.AreEqual(0, resultData.ExitCode);
             Assert.AreEqual(string.Empty, resultData.Output);
             Assert.AreEqual(string.Empty, resultData.Error);

@@ -1,0 +1,1 @@
+﻿<?xml version="1.0" encoding="utf-8"?><root><emptyTag1 /><emptyTag2></emptyTag2><tagWithAttributeAndValue attr="someValue">123</tagWithAttributeAndValue><nest><nestedTag attr="someValue2">some test</nestedTag></nest></root>
