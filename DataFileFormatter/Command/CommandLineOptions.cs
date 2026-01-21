@@ -6,7 +6,6 @@
     internal static class CommandLineOptions {
         internal const string JSON = "--json";
         internal const string XML = "--xml";
-        internal const string CSV = "--csv";
         internal const string FORMAT = "--format";
         internal const string UNFORMAT = "--unformat";
         internal const string OUTPUTFILE = "--outfile";

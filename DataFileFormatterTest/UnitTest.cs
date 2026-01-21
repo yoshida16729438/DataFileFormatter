@@ -6,6 +6,9 @@ using System.Reflection;
 
 namespace DataFileFormatterTest {
 
+    /// <summary>
+    /// unit test class for Program.cs
+    /// </summary>
     [TestClass]
     public class UnitTest {
 
@@ -25,14 +28,14 @@ namespace DataFileFormatterTest {
         }
 
         [TestMethod]
-        public void WhenValidJsonRequestedFromStdin_unformat() {
-            string output = TestContextHandler.GetOutputFilePath("unformatted.json");
-            string[] props = new string[] { "--unformat", "--charset", "shift-jis", "--outfile", output, TestContextHandler.GetTestDataPath("indentWithTab.json") };
+        public void WhenValidXmlRequestedFromStdin_unformat() {
+            string output = TestContextHandler.GetOutputFilePath("unindented.xml");
+            string[] props = new string[] { "--xml", "--unformat", "--charset", "utf-8", "--outfile", output, TestContextHandler.GetTestDataPath("indentWithTab.xml") };
 
             int result = Program.Main(props);
             Assert.AreEqual(0, result);
 
-            string expected = File.ReadAllText(TestContextHandler.GetTestDataPath("unindented.json"));
+            string expected = File.ReadAllText(TestContextHandler.GetTestDataPath("unindented.xml"));
             string actual = File.ReadAllText(output);
             Assert.AreEqual(expected, actual);
         }
