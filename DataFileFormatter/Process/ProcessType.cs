@@ -6,7 +6,6 @@
     internal enum ProcessType {
         json,
         xml,
-        csv,
         help
     }
 }

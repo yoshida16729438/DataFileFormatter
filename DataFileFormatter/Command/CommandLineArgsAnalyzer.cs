@@ -62,10 +62,6 @@ namespace DataFileFormatter.Command {
                         _commandLineData.ProcessType = ProcessType.xml;
                         break;
 
-                    case CommandLineOptions.CSV:
-                        _commandLineData.ProcessType = ProcessType.csv;
-                        break;
-
                     case CommandLineOptions.FORMAT:
                         _commandLineData.FormatStyle = FormatStyle.format;
                         break;

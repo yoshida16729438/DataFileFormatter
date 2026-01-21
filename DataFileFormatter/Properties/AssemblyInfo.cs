@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // 制御されます。アセンブリに関連付けられている情報を変更するには、
 // これらの属性値を変更します。
 [assembly: AssemblyTitle("DataFileFormatter")]
-[assembly: AssemblyDescription("File formatter for json, xml, csv")]
+[assembly: AssemblyDescription("File formatter for json, xml")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("DataFileFormatter")]
@@ -29,8 +29,8 @@ using System.Runtime.InteropServices;
 //      ビルド番号
 //      リビジョン
 //
-[assembly: AssemblyVersion("0.0.0.1")]
-[assembly: AssemblyFileVersion("0.0.0.1")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
 
 
 // to show internal methods to specific project

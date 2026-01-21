@@ -24,8 +24,5 @@
 
         //for xml
         NG_FAILED_TO_LOAD_XML = 201,
-
-        //for csv
-        NG_FAILED_TO_LOAD_CSV = 301
     }
 }

@@ -37,7 +37,7 @@ namespace DataFileFormatterTest.Command {
         public void AnalyzeTest2() {
             var analyzer = new CommandLineArgsAnalyzer();
             var res = analyzer.Analyze(new string[] {
-                "--csv",
+                "--xml",
                 "--format",
                 "--tab",
                 "DataFileFormatterTest.dll"
@@ -46,7 +46,7 @@ namespace DataFileFormatterTest.Command {
             Assert.AreEqual(ResultCode.OK, res.ResultCode);
 
             Assert.AreEqual(string.Empty, analyzer._commandLineData.OutputFileName);
-            Assert.AreEqual(ProcessType.csv, analyzer._commandLineData.ProcessType);
+            Assert.AreEqual(ProcessType.xml, analyzer._commandLineData.ProcessType);
             Assert.AreEqual(FormatStyle.format, analyzer._commandLineData.FormatStyle);
             Assert.AreEqual(IndentChar.tab, analyzer._commandLineData.IndentChar);
             Assert.AreEqual("DataFileFormatterTest.dll", analyzer._commandLineData.FileName);

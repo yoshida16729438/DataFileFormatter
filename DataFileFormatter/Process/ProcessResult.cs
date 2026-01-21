@@ -114,12 +114,5 @@
             return new ProcessResult(ResultCode.NG_FAILED_TO_LOAD_XML, "failed to load xml");
         }
 
-        /// <summary>
-        /// create instance for failed to load csv
-        /// </summary>
-        /// <returns></returns>
-        internal static ProcessResult FailedToLoadCsv() {
-            return new ProcessResult(ResultCode.NG_FAILED_TO_LOAD_CSV, "failed to load csv");
-        }
     }
 }
