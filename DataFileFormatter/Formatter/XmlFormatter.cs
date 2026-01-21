@@ -65,8 +65,9 @@ namespace DataFileFormatter.Formatter {
         private ProcessResult LoadXmlInner(TextReader reader) {
             try {
                 _document = XDocument.Load(reader);
-                _isXmlDeclarationExisted = _document.Declaration != null;
-                _encoding = _isXmlDeclarationExisted ? Encoding.GetEncoding(_document.Declaration.Encoding) : Encoding.UTF8;
+                XDeclaration declaration = _document.Declaration;
+                _isXmlDeclarationExisted = declaration != null;
+                _encoding = _isXmlDeclarationExisted && !string.IsNullOrEmpty(declaration.Encoding) ? Encoding.GetEncoding(declaration.Encoding) : Encoding.UTF8;
             } catch (XmlException) {
                 _isXmlDeclarationExisted = false;
                 _encoding = Encoding.UTF8;
