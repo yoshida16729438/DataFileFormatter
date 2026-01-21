@@ -16,7 +16,7 @@ type C:\Users\user012\Desktop\inputFile.xml | DataFileFormatter.exe --xml --unfo
 DataFileFormatter.exe --format --space --indentSpacesCount 8 C:\Users\user012\Desktop\inputFile.json
 ```
 
-## switches
+## Switches
 All the switches requires `--` prefix like `--json`.
 
 `file type`: \
@@ -34,7 +34,7 @@ available types:
 `output file path`: \
 If this switch is set, this application will output the file to the specified file path. \
 You have to specify file path after `--outfile` switch. \
-If not, you can get process result from standard output. \
+If not, you can get process result from standard output. 
 
 `indent character`: \
 Specifies which character to use for indentation when format style is `format`. \
@@ -46,16 +46,20 @@ available types:
 `indent spaces count`: \
 Specifies spaces count per indentation. \
 You have to specify actual spaces count value after `--indentSpacesCount` switch. \
-Ignored if indent character is `tab`.
+Ignored if indent character is `tab`. \
 Default: 4
 
 `character encoding`: \
 Specifies character encoding to use to read or output file. \
 You have to specify actual encoding name like `utf8`, `shift-jis` after `--charset` switch. \
-Available values depends on what character set is available in the execution environment.
+Available values depends on what character set is available in the execution environment. \
 Default: UTF-8
 
 `input file path`: \
 Specifies input file to read. \
 If not specified, this application will try to read from standard input. \
-Actually this is not a switch. Just specify only file path. \
+Actually this is not a switch. Just specify only file path. 
+
+## Exit code
+This application will set exit code if input data is invalid or some error occurs. \
+Please see [exit code list](https://github.com/yoshida16729438/DataFileFormatter/blob/main/DataFileFormatter/Process/ResultCode.cs) for all exit code list.
